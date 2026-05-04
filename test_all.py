@@ -21,7 +21,7 @@ def check(name, fn):
 
 # ── インポート ──────────────────────────────────────────────
 def t_imports():
-    import generator, html_builder, analyzer, app
+    import generator, html_builder, analyzer
     from html_builder import _render_el, _render_img, _render_lines, markdown_to_html, SECTION_CLASS
     from run_optin import load_script, load_config, config_to_text
 
