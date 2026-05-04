@@ -149,14 +149,16 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     }}
 
     /* ── 画像指示書（折りたたみ） ── */
-    .brief-bar {{
+    details.brief-details {{ margin: 0; }}
+    details.brief-details > summary {{
       background: #222; color: #aaa; font-size: 0.72rem;
       padding: 6px 16px; cursor: pointer; text-align: right;
-      user-select: none;
+      user-select: none; list-style: none;
     }}
-    .brief-bar:hover {{ background: #333; }}
+    details.brief-details > summary::-webkit-details-marker {{ display: none; }}
+    details.brief-details > summary:hover {{ background: #333; }}
     .brief-box {{
-      display: none; background: #1a1a1a; border-top: 1px solid #333;
+      background: #1a1a1a; border-top: 1px solid #333;
       padding: 16px 20px; font-size: 0.78rem; color: #bbb;
     }}
     .brief-box table {{ width: 100%; border-collapse: collapse; }}
@@ -205,42 +207,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     .el-fixed-text p {{ margin: 0 0 10px 0; }}
     .el-fixed-text p:last-child {{ margin-bottom: 0; }}
   </style>
-  <script>
-    function toggleBrief(bar) {{
-      var box = bar.nextElementSibling;
-      box.style.display = box.style.display === 'block' ? 'none' : 'block';
-      bar.textContent = box.style.display === 'block' ? '▲ 画像指示書を閉じる' : '▼ 画像指示書を確認する';
-    }}
-    function copyBrief(btn) {{
-      var box = btn.closest('.brief-box');
-      var rows = box.querySelectorAll('table tr');
-      var lines = ['【画像指示書】'];
-      rows.forEach(function(row) {{
-        var cells = row.querySelectorAll('td');
-        if (cells.length >= 2) {{
-          var key = cells[0].textContent.trim();
-          var val = cells[1].textContent.trim();
-          if (val) lines.push(key + ': ' + val);
-        }}
-      }});
-      var text = lines.join('\n');
-      if (navigator.clipboard) {{
-        navigator.clipboard.writeText(text).then(function() {{
-          var orig = btn.textContent;
-          btn.textContent = '✓ コピーしました';
-          setTimeout(function() {{ btn.textContent = orig; }}, 2000);
-        }});
-      }} else {{
-        var ta = document.createElement('textarea');
-        ta.value = text; document.body.appendChild(ta);
-        ta.select(); document.execCommand('copy');
-        document.body.removeChild(ta);
-        var orig = btn.textContent;
-        btn.textContent = '✓ コピーしました';
-        setTimeout(function() {{ btn.textContent = orig; }}, 2000);
-      }}
-    }}
-  </script>
+  <script></script>
 </head>
 <body>
   <div class="lp-wrap">
@@ -549,12 +516,10 @@ def _render_img(block_lines, section_name="", img_dir=None, img_counter=None):
         f'      <div style="margin: 0 -48px; width: calc(100% + 96px);">\n'
         f'        {placeholder}\n'
         f'        {copy_block}\n'
-        f'        <div class="brief-bar" onclick="toggleBrief(this)">▼ 画像指示書を確認する</div>\n'
-        f'        <div class="brief-box">'
-        f'<div class="brief-toolbar">'
-        f'<button class="brief-copy-btn" onclick="copyBrief(this)">📋 指示書をコピー</button>'
-        f'</div>'
-        f'<table>{rows}</table></div>\n'
+        f'        <details class="brief-details">\n'
+        f'          <summary>▼ 画像指示書を確認する</summary>\n'
+        f'          <div class="brief-box"><table>{rows}</table></div>\n'
+        f'        </details>\n'
         f'      </div>'
     )
 

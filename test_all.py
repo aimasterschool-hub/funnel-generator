@@ -147,10 +147,9 @@ def t_image_brief_editable():
         "- **補足**: テスト",
     ]
     html = _render_img(block)
-    assert 'contenteditable="true"' in html, "contenteditable がない"
-    assert "brief-copy-btn" in html, "コピーボタンがない"
+    assert "brief-details" in html, "details タグがない"
     assert "brief-val" in html, "brief-val クラスがない"
-    assert "copyBrief" in html, "copyBrief JS がない"
+    assert "▼ 画像指示書を確認する" in html, "サマリーテキストがない"
 
 check("画像指示書 編集/コピーボタン", t_image_brief_editable)
 
@@ -307,14 +306,25 @@ def t_footer_links_rendered():
     assert "footer-link" in html, "footer-link クラスがない"
     assert "プライバシーポリシー" in html, "プライバシーポリシーの文言がない"
     assert "特定商取引法に基づく表記" in html, "特定商取引法の文言がない"
+    # フッターセクションが全セクションとして描画されていないこと
+    sec_count = html.count('class="sec ')
+    assert sec_count == 1, f"フッターセクションが全セクション化されている（期待:1, 実際:{sec_count}）"
 
 check("フッターリンク レンダリング", t_footer_links_rendered)
 
 
 def t_footer_link_only_sections_skipped():
-    from generator import LINK_ONLY_SECTIONS
+    from generator import LINK_ONLY_SECTIONS, _generate_section, SECTION_NAMES_JA
     assert "プライバシーポリシー" in LINK_ONLY_SECTIONS
     assert "特定商取引法に基づく表記" in LINK_ONLY_SECTIONS
+    # generatorがこれらのセクションでAPIを呼ばず空マークダウンを返すこと
+    for raw_name in ("privacy_policy", "specified_commercial_transaction"):
+        sec = {"name": raw_name, "role": "フッター", "elements": [{"kind": "body_text", "desc": "test"}]}
+        md, briefs = _generate_section(sec, "台本テスト", "テストLP", "long")
+        display = SECTION_NAMES_JA[raw_name]
+        assert f"## {display}" in md, f"{raw_name}: セクション見出しがない"
+        assert "body_text" not in md, f"{raw_name}: コンテンツが生成されている（APIが呼ばれた）"
+        assert briefs == [], f"{raw_name}: 画像指示書が生成されている"
 
 check("generator LINK_ONLY_SECTIONS 定義", t_footer_link_only_sections_skipped)
 
