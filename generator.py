@@ -496,11 +496,12 @@ def _generate_image_brief(
             "notes": "",
         }
 
-    # サイズを確定値に強制上書き（Claudeが指示に従わない場合の保証）
-    if suggested_size:
-        brief_data["size"] = f"幅1040px × 高さ {suggested_size.replace('1040x', '')}（指定サイズ）"
-    elif is_hero:
+    # サイズを確定値に強制上書き（is_heroが最優先）
+    if is_hero:
         brief_data["size"] = "幅1040px × 高さ900〜1200px（ファーストビュー）"
+    elif suggested_size:
+        height = suggested_size.split("x", 1)[1] if "x" in suggested_size else suggested_size
+        brief_data["size"] = f"幅1040px × 高さ {height}（指定サイズ）"
     elif is_large_page and not brief_data.get("size"):
         brief_data["size"] = "幅1040px × 高さ800〜1200px"
 
