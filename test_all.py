@@ -150,6 +150,8 @@ def t_image_brief_editable():
     assert "brief-details" in html, "details タグがない"
     assert "brief-val" in html, "brief-val クラスがない"
     assert "▼ 画像指示書を確認する" in html, "サマリーテキストがない"
+    assert 'contenteditable="true"' in html, "contenteditable がない（編集不可）"
+    assert "brief-copy-btn" in html, "コピーボタンがない"
 
 check("画像指示書 編集/コピーボタン", t_image_brief_editable)
 
