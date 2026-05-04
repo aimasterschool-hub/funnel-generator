@@ -153,10 +153,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     details.brief-details > summary {{
       background: #222; color: #aaa; font-size: 0.72rem;
       padding: 6px 16px; cursor: pointer; text-align: right;
-      user-select: none; list-style: none;
+      user-select: none; list-style: none; display: block;
     }}
     details.brief-details > summary::-webkit-details-marker {{ display: none; }}
     details.brief-details > summary:hover {{ background: #333; }}
+    /* コンテンツの表示・非表示をCSSで明示制御 */
+    details.brief-details > .brief-box {{ display: none; }}
+    details.brief-details[open] > .brief-box {{ display: block; }}
     .brief-box {{
       background: #1a1a1a; border-top: 1px solid #333;
       padding: 16px 20px; font-size: 0.78rem; color: #bbb;

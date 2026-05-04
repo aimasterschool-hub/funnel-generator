@@ -488,13 +488,21 @@ def _generate_image_brief(
         brief_data = {
             "purpose": purpose,
             "kind": _infer_kind(purpose),
-            "size": "幅1040px × 高さ480px",
+            "size": "",
             "background": notes,
             "subject": None,
             "copy_text": pre_copy,
             "font_spec": None,
             "notes": "",
         }
+
+    # サイズを確定値に強制上書き（Claudeが指示に従わない場合の保証）
+    if suggested_size:
+        brief_data["size"] = f"幅1040px × 高さ {suggested_size.replace('1040x', '')}（指定サイズ）"
+    elif is_hero:
+        brief_data["size"] = "幅1040px × 高さ900〜1200px（ファーストビュー）"
+    elif is_large_page and not brief_data.get("size"):
+        brief_data["size"] = "幅1040px × 高さ800〜1200px"
 
     brief_md = IMAGE_BRIEF_TEMPLATE.format(
         purpose=brief_data.get("purpose", purpose),
