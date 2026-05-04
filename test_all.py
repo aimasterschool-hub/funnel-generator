@@ -281,6 +281,27 @@ def t_size_hint_logic():
 check("画像サイズ指示ロジック（ファーストビュー900〜1200px / 動画販売LP800〜1200px）", t_size_hint_logic)
 
 
+def t_calc_image_height():
+    from generator import _calc_image_height
+    # テキストなし → 最小サイズ
+    assert _calc_image_height(None, False) == 480
+    assert _calc_image_height(None, True)  == 640
+    # 短いテキスト（CTAボタン1〜2行）→ 変化なし
+    short = "今だけ無料｜30万円ツールを無料で受け取る"
+    assert _calc_image_height(short, False) == 480
+    assert _calc_image_height(short, True)  == 640
+    # 中テキスト（3〜5行相当）→ 1段上
+    medium = "\n".join(["テキスト行" * 5] * 4)
+    assert _calc_image_height(medium, False) == 640
+    assert _calc_image_height(medium, True)  == 800
+    # 長テキスト（10行以上）→ 最大サイズ
+    long_text = "\n".join(["長いテキスト行のサンプルです。"] * 12)
+    assert _calc_image_height(long_text, False) == 960
+    assert _calc_image_height(long_text, True)  == 1200
+
+check("_calc_image_height テキスト量に応じた高さ計算", t_calc_image_height)
+
+
 # ── フッターリンク ────────────────────────────────────────────
 def t_footer_link_sections_defined():
     assert "プライバシーポリシー" in FOOTER_LINK_SECTIONS

@@ -166,6 +166,25 @@ def _extract_json(text: str) -> dict:
                 return json.loads(text[start:i + 1])
     raise ValueError("対応する閉じ括弧が見つかりません")
 
+def _calc_image_height(copy_text: "str | None", is_large_page: bool) -> int:
+    """copy_textの文字数・行数から画像高さ(px)を推定する。ファーストビュー以外用。"""
+    if not copy_text or copy_text.strip() in ("なし", "null", ""):
+        return 640 if is_large_page else 480
+    chars = len(copy_text.replace("\n", "").replace(" ", "").replace("　", ""))
+    lines = copy_text.count("\n") + 1
+    score = max(chars // 25, lines)  # 25文字≒1行換算
+    if is_large_page:
+        if score >= 10: return 1200
+        if score >= 6:  return 1000
+        if score >= 3:  return 800
+        return 640
+    else:
+        if score >= 10: return 960
+        if score >= 6:  return 800
+        if score >= 3:  return 640
+        return 480
+
+
 def _lines_to_copy_text(lines_list: list) -> "str | None":
     """linesリストからcopy_text用の平文テキストを抽出する（マークダウンマーカーを除去）"""
     parts = []
@@ -520,8 +539,10 @@ def _generate_image_brief(
     elif suggested_size:
         height = suggested_size.split("x", 1)[1] if "x" in suggested_size else suggested_size
         brief_data["size"] = f"幅1040px × 高さ {height}（指定サイズ）"
-    elif is_large_page and not brief_data.get("size"):
-        brief_data["size"] = "幅1040px × 高さ800〜1200px"
+    else:
+        copy = brief_data.get("copy_text") or ""
+        h = _calc_image_height(copy, is_large_page)
+        brief_data["size"] = f"幅1040px × 高さ{h}px"
 
     brief_md = IMAGE_BRIEF_TEMPLATE.format(
         purpose=brief_data.get("purpose", purpose),
