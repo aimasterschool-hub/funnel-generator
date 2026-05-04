@@ -1,0 +1,305 @@
+{
+  "page_type": "optin",
+  "page_label": "オプトインLP（メールアドレス登録ページ）",
+  "sections": [
+    {
+      "id": "section_1",
+      "name": "header",
+      "type": "image",
+      "role": "ファーストビューで訪問者の注意を引き、ページのテーマと権威性を視覚的に伝える",
+      "elements": [
+        {
+          "kind": "image",
+          "desc": "人物キャラクター画像またはヒーローバナー。ページ全体のトーン（パワー系・黒ベース）を視覚的に表現するメインビジュアル",
+          "char_limit": null,
+          "size": "1200x600px"
+        }
+      ]
+    },
+    {
+      "id": "section_2",
+      "name": "free_gift_cta_top",
+      "type": "mixed",
+      "role": "無料プレゼントの存在を宣言し、登録への第一の行動喚起を促す",
+      "elements": [
+        {
+          "kind": "banner_text",
+          "desc": "無料プレゼント受け取りを訴求する短いキャッチコピー。緊急性・お得感を強調する帯テキスト",
+          "char_limit": 20,
+          "size": null
+        },
+        {
+          "kind": "headline",
+          "desc": "LINE登録によって得られるベネフィットを端的に示すメインキャッチコピー",
+          "char_limit": 35,
+          "size": null
+        },
+        {
+          "kind": "cta_button",
+          "desc": "LINE登録を促すメインCTAボタンのラベルテキスト",
+          "char_limit": 25,
+          "size": null
+        }
+      ],
+      "section_image": true
+    },
+    {
+      "id": "section_3",
+      "name": "registration_flow",
+      "type": "mixed",
+      "role": "登録手順をわかりやすく示し、登録への心理的ハードルを下げる",
+      "elements": [
+        {
+          "kind": "sub_headline",
+          "desc": "登録の流れセクションの見出し。「簡単に登録できる」ことを示す短い導入文",
+          "char_limit": 30,
+          "size": null
+        },
+        {
+          "kind": "step_list",
+          "desc": "登録完了までのステップを番号付きで示すリスト。各ステップは簡潔な動作と結果を記載",
+          "char_limit": 30,
+          "size": null
+        }
+      ],
+      "section_image": true
+    },
+    {
+      "id": "section_4",
+      "name": "problem_agitation",
+      "type": "mixed",
+      "role": "ターゲットが抱える悩み・課題を言語化し、共感と危機感を喚起する",
+      "elements": [
+        {
+          "kind": "headline",
+          "desc": "読者が直面している問題・現状の痛みを突く問いかけ型またはネガティブ訴求型の見出し",
+          "char_limit": 40,
+          "size": null
+        },
+        {
+          "kind": "bullet_list",
+          "desc": "ターゲットが感じている具体的な悩みや不満を列挙するリスト。各項目は読者が「自分のことだ」と感じる表現",
+          "char_limit": 35,
+          "size": null
+        },
+        {
+          "kind": "body_text",
+          "desc": "問題の深刻さや現状を放置した場合のリスクを説明する本文。感情に訴えるトーンで記述",
+          "char_limit": 150,
+          "size": null
+        }
+      ]
+    },
+    {
+      "id": "section_5",
+      "name": "evidence",
+      "type": "mixed",
+      "role": "主張の信頼性・実績を数値や証拠画像で裏付け、権威性を高める",
+      "elements": [
+        {
+          "kind": "sub_headline",
+          "desc": "実績・証拠セクションの導入見出し。「なぜ信頼できるか」を示すリード文",
+          "char_limit": 35,
+          "size": null
+        },
+        {
+          "kind": "image",
+          "desc": "実績・成果を示すスクリーンショット・グラフ・証拠画像（制作者作成）",
+          "char_limit": null,
+          "size": "1080x1080px"
+        },
+        {
+          "kind": "number_highlight",
+          "desc": "実績を裏付ける数値データ（例：人数・金額・期間など）を大きく強調表示する要素",
+          "char_limit": 25,
+          "size": null
+        },
+        {
+          "kind": "body_text",
+          "desc": "証拠画像や数値を補足説明する本文。数値の背景や再現性を簡潔に説明する",
+          "char_limit": 120,
+          "size": null
+        }
+      ]
+    },
+    {
+      "id": "section_6",
+      "name": "testimonials",
+      "type": "mixed",
+      "role": "実際の利用者の声を示すことで社会的証明を形成し、登録への不安を払拭する",
+      "elements": [
+        {
+          "kind": "sub_headline",
+          "desc": "利用者の声セクションの見出し。第三者からの支持・変化を示す短いリード文",
+          "char_limit": 30,
+          "size": null
+        },
+        {
+          "kind": "image",
+          "desc": "利用者の顔写真または声のスクリーンショット画像（人物写真は別途用意、画像は制作者作成）",
+          "char_limit": null,
+          "size": "400x400px"
+        },
+        {
+          "kind": "body_text",
+          "desc": "利用者の声テキスト。具体的な変化・成果・感想を一人称で記述。複数件繰り返し使用",
+          "char_limit": 150,
+          "size": null
+        }
+      ]
+    },
+    {
+      "id": "section_7",
+      "name": "profile_introduction",
+      "type": "mixed",
+      "role": "発信者のプロフィールと権威性を紹介し、「この人から学びたい」という信頼感を醸成する",
+      "elements": [
+        {
+          "kind": "sub_headline",
+          "desc": "プロフィールセクションの導入見出し。発信者の肩書きや専門領域を端的に示す",
+          "char_limit": 35,
+          "size": null
+        },
+        {
+          "kind": "image",
+          "desc": "発信者の人物写真。海外登壇・実績を感じさせるシーンやシチュエーションの写真が望ましい",
+          "char_limit": null,
+          "size": "600x600px"
+        },
+        {
+          "kind": "profile_text",
+          "desc": "発信者の経歴・実績・専門性・人物像を伝えるプロフィール本文。権威性と親近感を両立させる内容",
+          "char_limit": 300,
+          "size": null
+        }
+      ]
+    },
+    {
+      "id": "section_8",
+      "name": "system_detail",
+      "type": "mixed",
+      "role": "提供するコンテンツ・仕組みの詳細を説明し、登録後に得られる価値を具体的に伝える",
+      "elements": [
+        {
+          "kind": "sub_headline",
+          "desc": "システム・コンテンツ詳細セクションの見出し。何を提供するかを一言で示す",
+          "char_limit": 35,
+          "size": null
+        },
+        {
+          "kind": "body_text",
+          "desc": "提供コンテンツや仕組みの概要・特徴を説明する本文。読者が「なぜ有効か」を理解できる内容",
+          "char_limit": 150,
+          "size": null
+        },
+        {
+          "kind": "bullet_list",
+          "desc": "コンテンツの特徴・得られる具体的なメリットを箇条書きで列挙するリスト",
+          "char_limit": 40,
+          "size": null
+        },
+        {
+          "kind": "image",
+          "desc": "システム・コンテンツの内容を視覚的に補足する説明画像または図解",
+          "char_limit": null,
+          "size": "1080x600px"
+        }
+      ]
+    },
+    {
+      "id": "section_9",
+      "name": "free_gift_cta_bottom",
+      "type": "mixed",
+      "role": "ページ下部での最終的な行動喚起。無料特典の全内容を提示し、登録を強く促す",
+      "elements": [
+        {
+          "kind": "headline",
+          "desc": "読者に向けて特典をすべて受け取るよう強く呼びかけるクロージング見出し",
+          "char_limit": 40,
+          "size": null
+        },
+        {
+          "kind": "banner_text",
+          "desc": "特典の数や種類を端的に示す帯テキスト。受け取ることへの価値を強調する",
+          "char_limit": 25,
+          "size": null
+        },
+        {
+          "kind": "bullet_list",
+          "desc": "受け取れる特典の一覧リスト。各特典名とその価値・内容を簡潔に記載",
+          "char_limit": 40,
+          "size": null
+        },
+        {
+          "kind": "cta_button",
+          "desc": "LINE登録を促すボトムCTAボタンのラベルテキスト。トップと同等かより強い表現",
+          "char_limit": 25,
+          "size": null
+        }
+      ],
+      "section_image": true
+    },
+    {
+      "id": "section_10",
+      "name": "registration_flow_bottom",
+      "type": "mixed",
+      "role": "CTA直後に登録手順を再掲し、登録完了までの流れへスムーズに誘導する",
+      "elements": [
+        {
+          "kind": "sub_headline",
+          "desc": "登録の流れ再掲セクションの見出し。「今すぐ簡単に登録できる」ことを再確認させる短文",
+          "char_limit": 30,
+          "size": null
+        },
+        {
+          "kind": "step_list",
+          "desc": "登録完了までのステップを番号付きで示すリスト（上部と同一内容の再掲）",
+          "char_limit": 30,
+          "size": null
+        }
+      ],
+      "section_image": true
+    },
+    {
+      "id": "section_11",
+      "name": "privacy_policy",
+      "type": "text",
+      "role": "個人情報の取り扱いに関する方針を明示し、登録への法的・心理的安心感を提供する",
+      "elements": [
+        {
+          "kind": "sub_headline",
+          "desc": "プライバシーポリシーセクションの見出し",
+          "char_limit": 20,
+          "size": null
+        },
+        {
+          "kind": "body_text",
+          "desc": "個人情報の収集目的・管理方法・第三者提供の有無などを記載したプライバシーポリシー本文",
+          "char_limit": 150,
+          "size": null
+        }
+      ]
+    },
+    {
+      "id": "section_12",
+      "name": "specified_commercial_transaction",
+      "type": "text",
+      "role": "特定商取引法に基づく表記を掲載し、法的要件を満たすとともに信頼性を担保する",
+      "elements": [
+        {
+          "kind": "sub_headline",
+          "desc": "特定商取引法に基づく表記セクションの見出し",
+          "char_limit": 20,
+          "size": null
+        },
+        {
+          "kind": "body_text",
+          "desc": "販売事業者名・住所・連絡先・責任者名などの法定記載事項を含む本文",
+          "char_limit": 150,
+          "size": null
+        }
+      ]
+    }
+  ],
+  "length": "long"
+}

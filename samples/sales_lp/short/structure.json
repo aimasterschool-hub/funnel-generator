@@ -1,0 +1,218 @@
+{
+  "page_type": "sales_lp",
+  "page_label": "販売LP",
+  "sections": [
+    {
+      "id": "section_1",
+      "name": "hero",
+      "type": "image",
+      "optional": false,
+      "role": "ファーストビュー。訪問者の興味を一瞬で掴むメインビジュアルと強力なキャッチコピー",
+      "elements": [
+        {
+          "kind": "image",
+          "desc": "ヒーローバナー。商品の世界観・実績・販売者のイメージを表すメインビジュアル",
+          "char_limit": null,
+          "size": "1040x1000px"
+        }
+      ]
+    },
+    {
+      "id": "section_2",
+      "name": "scarcity_notice",
+      "type": "mixed",
+      "optional": false,
+      "role": "先着・数量限定の告知で緊急性を演出し、今すぐ購入を促す",
+      "elements": [
+        {
+          "kind": "banner_text",
+          "desc": "先着枠・残席・期間限定などの緊急性を示す帯テキスト（例: 先着◯名様限定）",
+          "char_limit": 30,
+          "size": null
+        },
+        {
+          "kind": "headline",
+          "desc": "数量・期限の具体的な訴求コピー。読者に「今すぐ決断しないと損する」と感じさせる",
+          "char_limit": 40,
+          "size": null
+        }
+      ],
+      "section_image": true
+    },
+    {
+      "id": "section_3",
+      "name": "checkout_top",
+      "type": "mixed",
+      "optional": false,
+      "role": "チェックアウトブロック①（上部）。商品・特典画像と価格・購入ボタンを並べた購入導線",
+      "elements": [
+        {
+          "kind": "image",
+          "desc": "商品イメージ画像。商品パッケージ・ツール画面・教材など商品の全体像を表す画像",
+          "char_limit": null,
+          "size": "1040x900px",
+          "purpose": "商品イメージ"
+        },
+        {
+          "kind": "body_text",
+          "desc": "商品説明テキスト。商品名・コンセプト・主な特徴を2〜3行で簡潔に説明する",
+          "char_limit": 120,
+          "size": null
+        },
+        {
+          "kind": "image",
+          "desc": "特典イメージ画像。オプトイン特典・追加特典の内容を視覚的に示す画像",
+          "char_limit": null,
+          "size": "1040x800px",
+          "purpose": "特典イメージ"
+        },
+        {
+          "kind": "body_text",
+          "desc": "特典説明テキスト。特典の内容・価値・受け取り方を1〜2行で説明する",
+          "char_limit": 80,
+          "size": null
+        },
+        {
+          "kind": "body_text",
+          "desc": "価格1表示：通常価格と一括限定価格を並べて表示（例: 通常価格 ◯◯円 → 一括限定価格 ◯◯円）",
+          "char_limit": 60,
+          "size": null
+        },
+        {
+          "kind": "cta_button",
+          "desc": "クレジットカード一括購入ボタン（例: クレジットカード一括でお申し込みはこちら）",
+          "char_limit": 30,
+          "size": null
+        },
+        {
+          "kind": "cta_button",
+          "desc": "銀行振込一括購入ボタン（例: 銀行振込一括でお申し込みはこちら）",
+          "char_limit": 30,
+          "size": null
+        },
+        {
+          "kind": "body_text",
+          "desc": "価格2表示：通常価格と分割限定価格を並べて表示（例: 通常価格 ◯◯円 → 月々◯◯円 × 24回）",
+          "char_limit": 60,
+          "size": null
+        },
+        {
+          "kind": "cta_button",
+          "desc": "クレジットカード24回分割購入ボタン（例: クレジット24回分割でお申し込みはこちら）",
+          "char_limit": 30,
+          "size": null
+        },
+        {
+          "kind": "fixed_content",
+          "fixed_content": "クレジットカードについて\nカード会社は「VISA・MASTER・JCB・AMEX・Diners Club」\nでお支払いいただけます。\n\n銀行振込について\n弊社にて入金確認が行えるのは平日のみ営業日となります。\n土日祝間での入金の確認は平日となります。予めご了承ください。\n\nご注意\n・ご登録いただくメールアドレスは、「Gmail・Yahooメール」を推奨しています。 「Gmail・Yahooメール」以外（@icloud.com・@me.com・@mac.com・@hotmail.com、Softbank・docomo・auなど）のアドレスでは、ご連絡メールが届かない場合があります。\n・WEBサイトコンテンツの提供という商品の性質上、ご購入後は返金や返品・キャンセルはできません。"
+        }
+      ],
+      "section_image": true
+    },
+    {
+      "id": "section_4",
+      "name": "evidence_sales",
+      "type": "mixed",
+      "optional": false,
+      "role": "商品の実績・エビデンスで信頼性を裏付け、購入への不安を払拭する",
+      "elements": [
+        {
+          "kind": "sub_headline",
+          "desc": "エビデンスセクションの見出し。実績・成果の信頼性を訴求する",
+          "char_limit": 35,
+          "size": null
+        },
+        {
+          "kind": "number_highlight",
+          "desc": "最も強い実績数値を大きく表示（例: 累計会員数 ◯◯名 / 月収◯◯万円達成など）",
+          "char_limit": 30,
+          "size": null
+        },
+        {
+          "kind": "image",
+          "desc": "実績・成果を示すスクリーンショット・グラフ・証拠画像。信頼性を視覚的に裏付ける",
+          "char_limit": null,
+          "size": "1040x900px",
+          "purpose": "実績エビデンス画像"
+        },
+        {
+          "kind": "body_text",
+          "desc": "エビデンス画像の補足説明。数値・実績の意味や背景を補足する",
+          "char_limit": 150,
+          "size": null
+        }
+      ]
+    },
+    {
+      "id": "section_5",
+      "name": "checkout_bottom",
+      "type": "mixed",
+      "optional": false,
+      "role": "チェックアウトブロック②（下部）。最終クロージングの購入ブロック",
+      "elements": [
+        {
+          "kind": "image",
+          "desc": "商品イメージ画像。商品パッケージ・ツール画面・教材など商品の全体像を表す画像",
+          "char_limit": null,
+          "size": "1040x900px",
+          "purpose": "商品イメージ"
+        },
+        {
+          "kind": "body_text",
+          "desc": "商品説明テキスト。商品名・コンセプト・主な特徴を2〜3行で簡潔に説明する",
+          "char_limit": 120,
+          "size": null
+        },
+        {
+          "kind": "image",
+          "desc": "特典イメージ画像。オプトイン特典・追加特典の内容を視覚的に示す画像",
+          "char_limit": null,
+          "size": "1040x800px",
+          "purpose": "特典イメージ"
+        },
+        {
+          "kind": "body_text",
+          "desc": "特典説明テキスト。特典の内容・価値・受け取り方を1〜2行で説明する",
+          "char_limit": 80,
+          "size": null
+        },
+        {
+          "kind": "body_text",
+          "desc": "価格1表示：通常価格と一括限定価格を並べて表示（例: 通常価格 ◯◯円 → 一括限定価格 ◯◯円）",
+          "char_limit": 60,
+          "size": null
+        },
+        {
+          "kind": "cta_button",
+          "desc": "クレジットカード一括購入ボタン（例: クレジットカード一括でお申し込みはこちら）",
+          "char_limit": 30,
+          "size": null
+        },
+        {
+          "kind": "cta_button",
+          "desc": "銀行振込一括購入ボタン（例: 銀行振込一括でお申し込みはこちら）",
+          "char_limit": 30,
+          "size": null
+        },
+        {
+          "kind": "body_text",
+          "desc": "価格2表示：通常価格と分割限定価格を並べて表示（例: 通常価格 ◯◯円 → 月々◯◯円 × 24回）",
+          "char_limit": 60,
+          "size": null
+        },
+        {
+          "kind": "cta_button",
+          "desc": "クレジットカード24回分割購入ボタン（例: クレジット24回分割でお申し込みはこちら）",
+          "char_limit": 30,
+          "size": null
+        },
+        {
+          "kind": "fixed_content",
+          "fixed_content": "クレジットカードについて\nカード会社は「VISA・MASTER・JCB・AMEX・Diners Club」\nでお支払いいただけます。\n\n銀行振込について\n弊社にて入金確認が行えるのは平日のみ営業日となります。\n土日祝間での入金の確認は平日となります。予めご了承ください。\n\nご注意\n・ご登録いただくメールアドレスは、「Gmail・Yahooメール」を推奨しています。 「Gmail・Yahooメール」以外（@icloud.com・@me.com・@mac.com・@hotmail.com、Softbank・docomo・auなど）のアドレスでは、ご連絡メールが届かない場合があります。\n・WEBサイトコンテンツの提供という商品の性質上、ご購入後は返金や返品・キャンセルはできません。"
+        }
+      ],
+      "section_image": true
+    }
+  ],
+  "length": "short"
+}

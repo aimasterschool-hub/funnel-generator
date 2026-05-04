@@ -1,0 +1,164 @@
+{
+  "page_type": "optin",
+  "page_label": "オプトインLP（ショート）",
+  "sections": [
+    {
+      "id": "section_1",
+      "name": "hero",
+      "type": "image",
+      "role": "ファーストビューで訪問者の注意を引き、ページのテーマと権威性を視覚的に伝える",
+      "elements": [
+        {
+          "kind": "image",
+          "desc": "ヒーローバナー。ページ全体のトーンを視覚的に表現するメインビジュアル",
+          "char_limit": null,
+          "size": "1040x480px"
+        }
+      ]
+    },
+    {
+      "id": "section_2",
+      "name": "cta_top",
+      "type": "mixed",
+      "role": "ファーストビュー直下の最初の登録ボタン。すぐ登録したい読者をここで受け止める",
+      "elements": [
+        {
+          "kind": "banner_text",
+          "desc": "無料プレゼント受け取りを訴求する短いキャッチコピー。緊急性・お得感を強調する帯テキスト",
+          "char_limit": 25,
+          "size": null
+        },
+        {
+          "kind": "headline",
+          "desc": "登録することで得られるベネフィットを端的に示すメインキャッチコピー",
+          "char_limit": 40,
+          "size": null
+        },
+        {
+          "kind": "cta_button",
+          "desc": "LINEまたはメルマガ登録を促すCTAボタンのラベルテキスト",
+          "char_limit": 25,
+          "size": null
+        }
+      ],
+      "section_image": true
+    },
+    {
+      "id": "section_3",
+      "name": "gift_detail",
+      "type": "mixed",
+      "role": "無料で受け取れるオプト特典の内容を具体的に示し、登録への動機を高める",
+      "elements": [
+        {
+          "kind": "sub_headline",
+          "desc": "特典セクションの見出し。「何がもらえるか」を一言で示す",
+          "char_limit": 35,
+          "size": null
+        },
+        {
+          "kind": "bullet_list",
+          "desc": "受け取れる特典の一覧リスト。各特典名とその価値・内容を簡潔に記載",
+          "char_limit": 40,
+          "size": null
+        },
+        {
+          "kind": "image",
+          "desc": "特典の内容を視覚的に示すイメージ画像",
+          "char_limit": null,
+          "size": "1040x400px"
+        }
+      ]
+    },
+    {
+      "id": "section_4",
+      "name": "how_to_receive",
+      "type": "mixed",
+      "role": "LINE登録までのステップを示し、心理的ハードルを下げる",
+      "elements": [
+        {
+          "kind": "sub_headline",
+          "desc": "受け取り方法セクションの見出し。「簡単・すぐできる」ことを強調する短い導入文",
+          "char_limit": 30,
+          "size": null
+        },
+        {
+          "kind": "step_list",
+          "desc": "LINEまたはメルマガ登録完了までのステップを番号付きで示すリスト",
+          "char_limit": 30,
+          "size": null
+        }
+      ],
+      "section_image": true
+    },
+    {
+      "id": "section_5",
+      "name": "cta_middle",
+      "type": "mixed",
+      "role": "受け取り方法説明直後の中間CTA。特典を確認した読者に登録を促す",
+      "elements": [
+        {
+          "kind": "headline",
+          "desc": "登録を後押しする短いクロージングコピー",
+          "char_limit": 35,
+          "size": null
+        },
+        {
+          "kind": "cta_button",
+          "desc": "LINEまたはメルマガ登録を促すCTAボタンのラベルテキスト",
+          "char_limit": 25,
+          "size": null
+        }
+      ],
+      "section_image": true
+    },
+    {
+      "id": "section_6",
+      "name": "product_overview",
+      "type": "mixed",
+      "role": "商品・コンテンツの概要を紹介し、登録後に得られる価値をさらに深掘りして訴求する",
+      "elements": [
+        {
+          "kind": "sub_headline",
+          "desc": "商品概要セクションの見出し。商品名・コンセプトを端的に示す",
+          "char_limit": 35,
+          "size": null
+        },
+        {
+          "kind": "body_text",
+          "desc": "商品・コンテンツの特徴・仕組み・独自性を説明する本文",
+          "char_limit": 200,
+          "size": null
+        },
+        {
+          "kind": "bullet_list",
+          "desc": "商品の特徴・得られる具体的なメリットを箇条書きで列挙するリスト",
+          "char_limit": 40,
+          "size": null
+        }
+      ],
+      "section_image": true
+    },
+    {
+      "id": "section_7",
+      "name": "cta_bottom",
+      "type": "mixed",
+      "role": "ページ最下部の最終CTA。全情報を見た読者に対して強く登録を促すクロージング",
+      "elements": [
+        {
+          "kind": "headline",
+          "desc": "最終クロージングコピー。今すぐ登録することへの強い呼びかけ",
+          "char_limit": 40,
+          "size": null
+        },
+        {
+          "kind": "cta_button",
+          "desc": "LINEまたはメルマガ登録を促す最終CTAボタン。トップより強い表現で",
+          "char_limit": 25,
+          "size": null
+        }
+      ],
+      "section_image": true
+    }
+  ],
+  "length": "short"
+}

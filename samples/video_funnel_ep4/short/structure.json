@@ -1,0 +1,173 @@
+{
+  "page_type": "video_funnel",
+  "page_label": "動画ファネル（ショート）",
+  "sections": [
+    {
+      "id": "section_1",
+      "name": "hero",
+      "type": "image",
+      "optional": false,
+      "role": "ファーストビュー。訪問者の注意を引くヘッダービジュアル",
+      "elements": [
+        {
+          "kind": "image",
+          "desc": "ヒーローバナー。ページのトーンを視覚的に表現するメインビジュアル",
+          "char_limit": null,
+          "size": "1040x900px"
+        }
+      ]
+    },
+    {
+      "id": "section_2",
+      "name": "video_embed",
+      "type": "media",
+      "optional": false,
+      "role": "YouTube動画埋め込みエリア。訪問者にVSL動画を視聴させる核心セクション",
+      "elements": [
+        {
+          "kind": "video_embed",
+          "desc": "YouTubeのVSL動画を埋め込む。16:9比率で幅1040px",
+          "char_limit": null,
+          "size": "1040x585px"
+        }
+      ]
+    },
+    {
+      "id": "section_3",
+      "name": "question_hook",
+      "type": "mixed",
+      "optional": false,
+      "role": "動画視聴後に質問を投げかけ、読者の関与を高めるセクション",
+      "elements": [
+        {
+          "kind": "headline",
+          "desc": "読者に問いかける質問形式のコピー。動画内容を踏まえて「あなたはどうですか？」と問いかける",
+          "char_limit": 40,
+          "size": null
+        },
+        {
+          "kind": "body_text",
+          "desc": "質問の背景・意図を補足する本文。読者が「自分のことだ」と感じる内容",
+          "char_limit": 100,
+          "size": null
+        }
+      ],
+      "section_image": true
+    },
+    {
+      "id": "section_4",
+      "name": "question_cta_top",
+      "type": "mixed",
+      "optional": false,
+      "role": "質問への回答を促すCTAボタン（上部）",
+      "elements": [
+        {
+          "kind": "cta_button",
+          "desc": "「質問に回答する」などのアクションを促すボタンテキスト",
+          "char_limit": 25,
+          "size": null
+        }
+      ],
+      "section_image": true
+    },
+    {
+      "id": "section_5",
+      "name": "gift_top",
+      "type": "mixed",
+      "optional": true,
+      "role": "【オプション】質問に回答してくれた方へのプレゼント内容。設置しない場合もある",
+      "elements": [
+        {
+          "kind": "banner_text",
+          "desc": "プレゼント受け取りを訴求する帯テキスト",
+          "char_limit": 25,
+          "size": null
+        },
+        {
+          "kind": "bullet_list",
+          "desc": "プレゼントの内容リスト。各特典名と価値を簡潔に記載",
+          "char_limit": 40,
+          "size": null
+        }
+      ],
+      "section_image": true
+    },
+    {
+      "id": "section_6",
+      "name": "evidence",
+      "type": "mixed",
+      "optional": false,
+      "role": "商品・ツールの実績・エビデンスで信頼性を裏付けるセクション",
+      "elements": [
+        {
+          "kind": "sub_headline",
+          "desc": "エビデンスセクションの導入見出し",
+          "char_limit": 35,
+          "size": null
+        },
+        {
+          "kind": "number_highlight",
+          "desc": "実績を裏付ける数値データを大きく強調表示",
+          "char_limit": 25,
+          "size": null
+        },
+        {
+          "kind": "image",
+          "desc": "実績・成果を示すスクリーンショット・グラフ・証拠画像",
+          "char_limit": null,
+          "size": "1040x900px"
+        }
+      ]
+    },
+    {
+      "id": "section_7",
+      "name": "product_overview",
+      "type": "mixed",
+      "optional": false,
+      "role": "商品・ツールの概要。訴求力の高いポイントを簡潔に伝える",
+      "elements": [
+        {
+          "kind": "sub_headline",
+          "desc": "商品名・コンセプトを端的に示す見出し",
+          "char_limit": 35,
+          "size": null
+        },
+        {
+          "kind": "body_text",
+          "desc": "商品の特徴・最も強い訴求ポイントを簡潔に説明する本文",
+          "char_limit": 150,
+          "size": null
+        },
+        {
+          "kind": "bullet_list",
+          "desc": "商品の強みを箇条書きで列挙",
+          "char_limit": 40,
+          "size": null
+        }
+      ]
+    },
+    {
+      "id": "section_8",
+      "name": "question_cta_bottom",
+      "type": "mixed",
+      "optional": false,
+      "role": "質問への回答を促すCTAボタン（下部）。全コンテンツを見た読者への最終誘導",
+      "elements": [
+        {
+          "kind": "headline",
+          "desc": "最終クロージングコピー。回答・登録を強く促す一文",
+          "char_limit": 35,
+          "size": null
+        },
+        {
+          "kind": "cta_button",
+          "desc": "「質問に回答する」などのアクションボタンテキスト（上部より強い表現で）",
+          "char_limit": 25,
+          "size": null
+        }
+      ],
+      "section_image": true
+    }
+  ],
+  "length": "short"
+}

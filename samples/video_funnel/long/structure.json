@@ -1,0 +1,161 @@
+{
+  "page_type": "video_funnel",
+  "page_label": "video_funnel",
+  "sections": [
+    {
+      "id": "section_1",
+      "name": "header",
+      "type": "text",
+      "role": "動画視聴を促す導線の冒頭。訪問者の注意を引き、まず動画を見るよう誘導する",
+      "elements": [
+        {
+          "kind": "headline",
+          "desc": "動画を必ず視聴するよう促す短い命令形の見出し",
+          "char_limit": 25,
+          "size": null
+        },
+        {
+          "kind": "banner_text",
+          "desc": "視聴を促す視覚的な矢印・記号による誘導装飾テキスト",
+          "char_limit": 10,
+          "size": null
+        }
+      ]
+    },
+    {
+      "id": "section_2",
+      "name": "question",
+      "type": "text",
+      "role": "動画視聴者に向けて問いかけを行い、共感と当事者意識を引き出す",
+      "elements": [
+        {
+          "kind": "sub_headline",
+          "desc": "動画視聴者全員へ向けた問いかけを示す装飾付きサブ見出し",
+          "char_limit": 30,
+          "size": null
+        }
+      ]
+    },
+    {
+      "id": "section_3",
+      "name": "problem_agitation",
+      "type": "text",
+      "role": "読者が抱える悩みや課題を言語化し、感情的な共鳴と問題意識を高める",
+      "elements": [
+        {
+          "kind": "headline",
+          "desc": "ターゲットが抱える主要な悩み・課題を突く見出し",
+          "char_limit": 40,
+          "size": null
+        },
+        {
+          "kind": "body_text",
+          "desc": "問題の深刻さや読者の現状を具体的に描写し、感情を揺さぶる本文",
+          "char_limit": 150,
+          "size": null
+        }
+      ]
+    },
+    {
+      "id": "section_4",
+      "name": "self_introduction",
+      "type": "mixed",
+      "role": "発信者の信頼性・権威性・共感を確立し、読者との心理的距離を縮める",
+      "elements": [
+        {
+          "kind": "image",
+          "desc": "発信者のプロフィール写真または顔写真",
+          "char_limit": null,
+          "size": "400x400px"
+        },
+        {
+          "kind": "profile_text",
+          "desc": "発信者の経歴・実績・背景を簡潔に伝え、信頼と親近感を醸成するプロフィール文",
+          "char_limit": 300,
+          "size": null
+        }
+      ]
+    },
+    {
+      "id": "section_5",
+      "name": "evidence",
+      "type": "image",
+      "role": "実績・成果・信頼性を視覚的に証明し、オファーへの納得感を高める",
+      "elements": [
+        {
+          "kind": "image",
+          "desc": "実績・証拠・数値などを示すエビデンス画像（スクリーンショット・グラフ・実績証明など）",
+          "char_limit": null,
+          "size": "1200x800px"
+        }
+      ]
+    },
+    {
+      "id": "section_6",
+      "name": "bonus_offer",
+      "type": "mixed",
+      "role": "無料特典のオファーを提示し、希少性・緊急性を煽りながらCTAへ誘導する",
+      "elements": [
+        {
+          "kind": "headline",
+          "desc": "無料特典を受け取るための条件と内容を示す魅力的な見出し",
+          "char_limit": 40,
+          "size": null
+        },
+        {
+          "kind": "body_text",
+          "desc": "特典の内容・合計金額・無料配布であることを伝える本文",
+          "char_limit": 120,
+          "size": null
+        },
+        {
+          "kind": "banner_text",
+          "desc": "配布数に上限があることを強調する希少性・緊急性の警告テキスト",
+          "char_limit": 60,
+          "size": null
+        },
+        {
+          "kind": "body_text",
+          "desc": "熱量の高い反応者への追加特典（先行案内など）を伝えるサブ訴求文",
+          "char_limit": 100,
+          "size": null
+        },
+        {
+          "kind": "cta_button",
+          "desc": "LINEへの感想送信・問い合わせに誘導するアクションボタン",
+          "char_limit": 25,
+          "size": null
+        }
+      ]
+    },
+    {
+      "id": "section_7",
+      "name": "privacy_policy",
+      "type": "text",
+      "role": "個人情報の取り扱いに関する法的・信頼的担保を示す",
+      "elements": [
+        {
+          "kind": "body_text",
+          "desc": "プライバシーポリシーへのリンクまたは要約テキスト",
+          "char_limit": 80,
+          "size": null
+        }
+      ]
+    },
+    {
+      "id": "section_8",
+      "name": "specified_commercial_transaction",
+      "type": "text",
+      "role": "特定商取引法に基づく表記を掲載し、法的要件を満たす",
+      "elements": [
+        {
+          "kind": "body_text",
+          "desc": "特定商取引法に基づく事業者情報・表記の本文またはリンク",
+          "char_limit": 80,
+          "size": null
+        }
+      ]
+    }
+  ],
+  "length": "long"
+}
