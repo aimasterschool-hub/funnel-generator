@@ -87,6 +87,18 @@ LINK_ONLY_SECTIONS = {
     "特定商取引法に基づく表記",
 }
 
+# structure.json に section_image フラグがなくても自動でバナー画像指示書を付与するセクション
+AUTO_SECTION_IMAGE = {
+    "特典＋登録ボタン（上部）", "特典＋登録ボタン（下部）",
+    "登録ボタン（上部）", "登録ボタン（中部）", "登録ボタン（下部）",
+    "登録ボタン①（上部）", "登録ボタン②（中部）",
+    "特典詳細", "特典紹介", "特典再提示", "特典オファー",
+    "クロージング",
+    "質問回答ボタン（上部）", "質問回答ボタン（下部）",
+    "プレゼント内容（上部）", "プレゼント内容（下部）",
+    "チェックアウトブロック①（上部）", "チェックアウトブロック②（中部）", "チェックアウトブロック③（下部）",
+}
+
 LENGTH_GUIDE = {
     "long":  "各要素200〜400文字を目安に、読み応えのある文章で書いてください。",
     "short": "各要素50〜150文字を目安に、簡潔に要点だけ書いてください。",
@@ -273,8 +285,9 @@ def _generate_section(section: dict, script: str, page_label: str, length: str =
             )
             lines.append(text_content)
 
-    # セクション全体を1枚の画像にする場合の指示書（section_image: true のとき生成）
-    if section.get("section_image"):
+    # セクション全体を1枚の画像にする場合の指示書
+    # structure.json の section_image フラグ、または AUTO_SECTION_IMAGE に含まれるセクションは自動生成
+    if section.get("section_image") or display_name in AUTO_SECTION_IMAGE:
         visual_elems = [
             e for e in elements
             if e.get("kind") not in ("video_embed",) and not e.get("fixed_content")
