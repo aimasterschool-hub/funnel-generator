@@ -3,6 +3,16 @@ app.py - ファネル生成ツール（Streamlit版）
 """
 
 import os
+
+# Streamlit CloudのSecretsをos.environに注入（他モジュールのAnthropicクライアント初期化前に実行）
+try:
+    import streamlit as st
+    for _key in ("ANTHROPIC_API_KEY", "FUNNEL_PASS"):
+        if _key in st.secrets and _key not in os.environ:
+            os.environ[_key] = st.secrets[_key]
+except Exception:
+    pass
+
 import tempfile
 import streamlit as st
 import streamlit.components.v1 as components
@@ -37,7 +47,7 @@ CRITICAL_FIELDS_LIST = [
     (["seller", "appearance"], "販売者の外見・雰囲気（画像指示に使用）", "例: 30代女性、黒髪ショート、知的な雰囲気"),
 ]
 
-AUTH_PASS = os.environ.get("FUNNEL_PASS", st.secrets.get("FUNNEL_PASS", "funnel2024") if hasattr(st, "secrets") else "funnel2024")
+AUTH_PASS = os.environ.get("FUNNEL_PASS", "funnel2024")
 
 # ── ページ設定 ─────────────────────────────────────────────────────────
 st.set_page_config(
