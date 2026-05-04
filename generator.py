@@ -166,6 +166,22 @@ def _extract_json(text: str) -> dict:
                 return json.loads(text[start:i + 1])
     raise ValueError("対応する閉じ括弧が見つかりません")
 
+def _lines_to_copy_text(lines_list: list) -> "str | None":
+    """linesリストからcopy_text用の平文テキストを抽出する（マークダウンマーカーを除去）"""
+    parts = []
+    for chunk in lines_list:
+        for line in chunk.split("\n"):
+            line = line.strip()
+            if not line or line == "---":
+                continue
+            if line.startswith("#") or line.startswith(">"):
+                continue
+            if line.startswith("**【") and "】**" in line:
+                continue
+            parts.append(line)
+    return "\n".join(parts) if parts else None
+
+
 IMAGE_BRIEF_TEMPLATE = """### 画像ブロック: {purpose}
 
 - **種別**: {kind}
@@ -297,6 +313,7 @@ def _generate_section(section: dict, script: str, page_label: str, length: str =
                 f"- [{e.get('kind','')}] {e.get('desc','')}"
                 for e in visual_elems
             )
+            section_pre_copy = _lines_to_copy_text(lines[2:])
             section_img_block = {
                 "purpose": f"{display_name}セクション全体をひとつのバナー画像として制作する場合の指示書",
                 "suggested_size": section.get("section_image_size", ""),
@@ -307,7 +324,8 @@ def _generate_section(section: dict, script: str, page_label: str, length: str =
                 ),
             }
             brief_md, brief_data = _generate_image_brief(
-                section_img_block, display_name, script, page_label
+                section_img_block, display_name, script, page_label,
+                pre_copy=section_pre_copy,
             )
             lines.append(brief_md)
             image_briefs.append(brief_data)

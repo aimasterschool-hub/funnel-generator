@@ -264,31 +264,30 @@ elif st.session_state.step == "generating":
 
 # ── ステップ4: 結果表示 ────────────────────────────────────────────────
 elif st.session_state.step == "done":
-    st.title("✅ 生成完了")
-
     stem        = Path(st.session_state.script_name).stem
     ts          = datetime.now().strftime("%Y%m%d_%H%M")
     funnel_type = st.session_state.funnel_type
     length      = st.session_state.length
     fname       = f"{ts}_{stem}_{funnel_type}_{length}"
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns([3, 1, 1])
     with col1:
+        st.markdown("### ✅ 生成完了")
+    with col2:
         st.download_button(
-            "📥 Markdown をダウンロード (.txt)",
+            "📥 Markdown (.txt)",
             data=st.session_state.md_content.encode("utf-8"),
             file_name=f"{fname}.txt",
             mime="text/plain",
             use_container_width=True,
         )
-    with col2:
+    with col3:
         st.download_button(
-            "📥 HTML をダウンロード (.html)",
+            "📥 HTML (.html)",
             data=st.session_state.html_content.encode("utf-8"),
             file_name=f"{fname}.html",
             mime="text/html",
             use_container_width=True,
         )
 
-    st.subheader("プレビュー")
-    components.html(st.session_state.html_content, height=900, scrolling=True)
+    components.html(st.session_state.html_content, height=1200, scrolling=True)
