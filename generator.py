@@ -68,6 +68,17 @@ SECTION_NAMES_JA = {
     "checkout_bottom":         "チェックアウトブロック③（下部）",
     "seller_message":          "販売者メッセージ",
     "evidence_sales":          "商品のエビデンス",
+    # optin/short
+    "cta_top":                 "登録ボタン（上部）",
+    "cta_middle":              "登録ボタン（中部）",
+    "cta_bottom":              "登録ボタン（下部）",
+    "gift_detail":             "特典詳細",
+    "how_to_receive":          "受け取り方法",
+    # 動画ファネル共通
+    "question":                "質問投げかけ",
+    "self_introduction":       "自己紹介",
+    "bonus_offer":             "特典オファー",
+    "product_overview":        "商品概要",
 }
 
 # テキスト生成をスキップしてリンクのみ表示するセクション
@@ -237,7 +248,7 @@ def _generate_section(section: dict, script: str, page_label: str, length: str =
         if elem.get("kind") == "image":
             img_block = {
                 "purpose": elem.get("purpose") or elem.get("desc", ""),
-                "suggested_size": elem.get("size") or "1040x480px",
+                "suggested_size": elem.get("size") or "",
                 "notes": elem.get("desc", ""),
             }
             brief_md, brief_data = _generate_image_brief(
