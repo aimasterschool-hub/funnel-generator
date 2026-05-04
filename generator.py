@@ -404,14 +404,16 @@ def _generate_image_brief(
     notes = img_block.get("notes", "")
     suggested_size = img_block.get("suggested_size", "")
 
-    # 動画ファネル・販売LPは 1040 x 800〜1200px 指定
+    is_hero = any(k in section_name for k in ["ファーストビュー", "ヒーロー", "ヘッド", "hero", "header"])
     is_large_page = any(k in page_label for k in ["動画", "販売LP"])
     if suggested_size:
         size_hint = f"幅1040px固定・高さ {suggested_size.replace('1040x', '')}（指定サイズ: {suggested_size}）。AI画像生成ツールへの入稿を想定しているため、アスペクト比も明記すること"
+    elif is_hero:
+        size_hint = "幅1040px固定・高さ900〜1200px（ファーストビュー指定サイズ）。AI画像生成ツールへの入稿を想定しているため、アスペクト比も明記すること"
     elif is_large_page:
         size_hint = "幅1040px固定・高さ800〜1200pxの範囲でセクション用途に応じて決定。AI画像生成ツールへの入稿を想定しているため、アスペクト比も明記すること"
     else:
-        size_hint = "幅1040px固定・高さはセクション用途に合わせて調整（目安: ファーストビュー=580px、人物写真=640px、エビデンス=800px）"
+        size_hint = "幅1040px固定・高さはセクション用途に合わせて調整（目安: 人物写真=640px、エビデンス=800px）。AI画像生成ツールへの入稿を想定しているため、アスペクト比も明記すること"
 
     if pre_copy:
         copy_instruction = f"\n【確定コピー】以下のキャッチコピーをcopy_textにそのまま使用してください：\n{pre_copy}"

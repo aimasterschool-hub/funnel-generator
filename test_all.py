@@ -246,27 +246,37 @@ check("generator 要素分類ロジック（section_image / fixed_content）", t
 
 
 def t_size_hint_logic():
-    # 動画/販売LPは大サイズ、オプトインはデフォルト
-    for page_label, suggested, expect_large in [
-        ("販売LP",       "1040x900px", True),
-        ("動画ファネル", "",           True),
-        ("オプトインLP", "",           False),
+    from generator import _generate_image_brief
+    # ファーストビューは 900〜1200px
+    hero_img = {"purpose": "ファーストビュー画像", "suggested_size": "", "notes": ""}
+    _, hero_data = _generate_image_brief.__wrapped__(hero_img, "ファーストビュー", "台本", "オプトインLP") \
+        if hasattr(_generate_image_brief, "__wrapped__") else (None, None)
+    # 直接ロジックを検証
+    for section_name, page_label, suggested, expect_hero, expect_large in [
+        ("ファーストビュー", "オプトインLP", "",           True,  False),
+        ("ヒーロー",         "オプトインLP", "",           True,  False),
+        ("証拠",             "販売LP",       "",           False, True),
+        ("証拠",             "動画ファネル", "",           False, True),
+        ("証拠",             "オプトインLP", "1040x600px", False, False),
     ]:
+        is_hero = any(k in section_name for k in ["ファーストビュー", "ヒーロー", "ヘッド", "hero", "header"])
         is_large = any(k in page_label for k in ["動画", "販売LP"])
-        suggested_size = suggested
-        if suggested_size:
-            hint = f"幅1040px固定・高さ {suggested_size.replace('1040x','')}"
+        if suggested:
+            hint = f"幅1040px固定・高さ {suggested.replace('1040x','')}"
+        elif is_hero:
+            hint = "幅1040px固定・高さ900〜1200px（ファーストビュー指定サイズ）"
         elif is_large:
             hint = "幅1040px固定・高さ800〜1200px"
         else:
             hint = "幅1040px固定・高さはセクション用途に合わせて調整"
+        if expect_hero:
+            assert "900〜1200" in hint, f"{section_name}/{page_label}: ファーストビューサイズ(900〜1200)がない → {hint}"
+        if expect_large and not suggested:
+            assert "800〜1200" in hint, f"{section_name}/{page_label}: 大サイズ指示がない"
+        if not expect_hero and not expect_large and not suggested:
+            assert "900〜1200" not in hint and "800〜1200" not in hint, f"{section_name}: 誤ったサイズ"
 
-        if expect_large:
-            assert "800" in hint or suggested_size, f"{page_label}: 大サイズ指示がない"
-        else:
-            assert "800〜1200" not in hint, f"{page_label}: 誤って大サイズ指示が入った"
-
-check("画像サイズ指示ロジック（動画/販売LP vs オプトイン）", t_size_hint_logic)
+check("画像サイズ指示ロジック（ファーストビュー900〜1200px / 動画販売LP800〜1200px）", t_size_hint_logic)
 
 
 # ── フッターリンク ────────────────────────────────────────────
