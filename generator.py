@@ -448,10 +448,10 @@ def _generate_image_brief(
 
     is_hero = any(k in section_name for k in ["ファーストビュー", "ヒーロー", "ヘッド", "hero", "header"])
     is_large_page = any(k in page_label for k in ["動画", "販売LP"])
-    if suggested_size:
-        size_hint = f"幅1040px固定・高さ {suggested_size.replace('1040x', '')}（指定サイズ: {suggested_size}）。AI画像生成ツールへの入稿を想定しているため、アスペクト比も明記すること"
-    elif is_hero:
+    if is_hero:
         size_hint = "幅1040px固定・高さ900〜1200px（ファーストビュー指定サイズ）。AI画像生成ツールへの入稿を想定しているため、アスペクト比も明記すること"
+    elif suggested_size:
+        size_hint = f"幅1040px固定・高さ {suggested_size.replace('1040x', '')}（指定サイズ: {suggested_size}）。AI画像生成ツールへの入稿を想定しているため、アスペクト比も明記すること"
     elif is_large_page:
         size_hint = "幅1040px固定・高さ800〜1200pxの範囲でセクション用途に応じて決定。AI画像生成ツールへの入稿を想定しているため、アスペクト比も明記すること"
     else:
