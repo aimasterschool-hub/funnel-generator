@@ -386,7 +386,7 @@ elif st.session_state.step == "generating":
                 st.write("✅ 骨子ファイルをそのまま使用（生成スキップ）")
             else:
                 st.write("台本から骨子を生成中...")
-                outline, cached = get_outline(script_text, script_name)
+                outline, cached = get_outline(script_text, script_name, funnel_type)
                 st.write(f"✅ 骨子{'（キャッシュ）' if cached else 'を生成しました'}")
 
             st.write("サンプル構造を読み込み中...")
