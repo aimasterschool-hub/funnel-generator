@@ -12,17 +12,17 @@ client = anthropic.Anthropic()
 SECTION_NAMES_JA = {
     "hero":                    "ファーストビュー",
     "header":                  "ファーストビュー",
-    "cta_primary_first":       "登録ボタン①（上部）",
-    "cta_primary_1":           "登録ボタン①（上部）",
-    "cta_primary":             "登録ボタン①（上部）",
+    "cta_primary_first":       "オプトインボタン①",
+    "cta_primary_1":           "オプトインボタン①",
+    "cta_primary":             "オプトインボタン①",
     "incentive_detail":        "特典紹介",
     "gift_offer":              "特典紹介",
     "lead_magnet":             "特典紹介",
     "instruction_steps":       "受け取り方法",
     "registration_steps":      "受け取り方法",
-    "cta_primary_second":      "登録ボタン②（中部）",
-    "cta_primary_2":           "登録ボタン②（中部）",
-    "cta_secondary":           "登録ボタン②（中部）",
+    "cta_primary_second":      "オプトインボタン②",
+    "cta_primary_2":           "オプトインボタン②",
+    "cta_secondary":           "オプトインボタン②",
     "pain_point_agitation":    "問題提起・共感",
     "problem_agitation":       "問題提起・共感",
     "solution_bridge":         "解決への橋渡し",
@@ -44,10 +44,10 @@ SECTION_NAMES_JA = {
     "cta_final_comprehensive": "クロージング",
     "footer":                  "フッター",
     # Word doc derived names
-    "free_gift_cta_top":       "特典＋登録ボタン（上部）",
-    "free_gift_cta_bottom":    "特典＋登録ボタン（下部）",
-    "registration_flow":       "登録の流れ（上部）",
-    "registration_flow_bottom":"登録の流れ（下部）",
+    "free_gift_cta_top":       "特典＋オプトインボタン①",
+    "free_gift_cta_bottom":    "特典＋オプトインボタン②",
+    "registration_flow":       "登録の流れ①",
+    "registration_flow_bottom":"登録の流れ②",
     "evidence":                "エビデンス",
     "testimonials":            "利用者の声",
     "profile_introduction":    "販売者紹介",
@@ -57,21 +57,21 @@ SECTION_NAMES_JA = {
     # 動画ファネル
     "video_embed":             "YouTube動画",
     "question_hook":           "質問投げかけ",
-    "question_cta_top":        "質問回答ボタン（上部）",
-    "question_cta_bottom":     "質問回答ボタン（下部）",
-    "gift_top":                "プレゼント内容（上部）",
-    "gift_bottom":             "プレゼント内容（下部）",
+    "question_cta_top":        "質問回答ボタン①",
+    "question_cta_bottom":     "質問回答ボタン②",
+    "gift_top":                "プレゼント内容①",
+    "gift_bottom":             "プレゼント内容②",
     # 販売LP
     "scarcity_notice":         "先着枠・数量提示",
-    "checkout_top":            "チェックアウトブロック①（上部）",
-    "checkout_middle":         "チェックアウトブロック②（中部）",
-    "checkout_bottom":         "チェックアウトブロック③（下部）",
+    "checkout_top":            "決済申込ブロック①",
+    "checkout_middle":         "決済申込ブロック②",
+    "checkout_bottom":         "決済申込ブロック③",
     "seller_message":          "販売者メッセージ",
     "evidence_sales":          "商品のエビデンス",
     # optin/short
-    "cta_top":                 "登録ボタン（上部）",
-    "cta_middle":              "登録ボタン（中部）",
-    "cta_bottom":              "登録ボタン（下部）",
+    "cta_top":                 "オプトインボタン①",
+    "cta_middle":              "オプトインボタン②",
+    "cta_bottom":              "オプトインボタン③",
     "gift_detail":             "特典詳細",
     "how_to_receive":          "受け取り方法",
     # 動画ファネル共通
@@ -89,14 +89,13 @@ LINK_ONLY_SECTIONS = {
 
 # structure.json に section_image フラグがなくても自動でバナー画像指示書を付与するセクション
 AUTO_SECTION_IMAGE = {
-    "特典＋登録ボタン（上部）", "特典＋登録ボタン（下部）",
-    "登録ボタン（上部）", "登録ボタン（中部）", "登録ボタン（下部）",
-    "登録ボタン①（上部）", "登録ボタン②（中部）",
+    "特典＋オプトインボタン①", "特典＋オプトインボタン②",
+    "オプトインボタン①", "オプトインボタン②", "オプトインボタン③",
     "特典詳細", "特典紹介", "特典再提示", "特典オファー",
     "クロージング",
-    "質問回答ボタン（上部）", "質問回答ボタン（下部）",
-    "プレゼント内容（上部）", "プレゼント内容（下部）",
-    "チェックアウトブロック①（上部）", "チェックアウトブロック②（中部）", "チェックアウトブロック③（下部）",
+    "質問回答ボタン①", "質問回答ボタン②",
+    "プレゼント内容①", "プレゼント内容②",
+    "決済申込ブロック①", "決済申込ブロック②", "決済申込ブロック③",
 }
 
 LENGTH_GUIDE = {
@@ -106,8 +105,8 @@ LENGTH_GUIDE = {
 
 # シンプルなセクションはHaikuで生成（コスト削減）
 HAIKU_SECTIONS = {
-    "登録の流れ（上部）",
-    "登録の流れ（下部）",
+    "登録の流れ①",
+    "登録の流れ②",
     "プライバシーポリシー",
     "特定商取引法に基づく表記",
 }

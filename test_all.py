@@ -86,11 +86,14 @@ check("SECTION_NAMES_JA 新規エントリ", t_section_names)
 def t_section_class():
     required = [
         "先着枠・数量提示",
-        "チェックアウトブロック①（上部）",
-        "チェックアウトブロック②（中部）",
-        "チェックアウトブロック③（下部）",
+        "決済申込ブロック①",
+        "決済申込ブロック②",
+        "決済申込ブロック③",
         "販売者メッセージ",
         "商品のエビデンス",
+        "オプトインボタン①",
+        "オプトインボタン②",
+        "オプトインボタン③",
     ]
     missing = [s for s in required if s not in SECTION_CLASS]
     assert not missing, f"SECTION_CLASS 欠落: {missing}"
@@ -182,7 +185,7 @@ check("画像指示書 多行コピーテキスト", t_image_brief_multiline_cop
 def t_full_pipeline():
     md = """# テスト販売LP
 
-## チェックアウトブロック①（上部）
+## 決済申込ブロック①
 
 > 役割: テスト
 
@@ -218,7 +221,7 @@ VISAです。
     html = markdown_to_html(md, "テスト", "/tmp")
     assert "el-fixed-text" in html,          "定型文ブロックなし"
     assert "YouTube 動画エリア" in html,     "動画プレースホルダーなし"
-    assert "sec-white" in html,              "チェックアウトブロックのCSSクラスなし"
+    assert "sec-white" in html,              "決済申込ブロックのCSSクラスなし"
     assert "sec-dark" in html,               "先着枠のCSSクラスなし"
     assert "先着30名限定" in html,           "バナーテキスト欠落"
 
