@@ -24,7 +24,7 @@ from outline import get_outline
 from analyzer import get_sample_structure
 from generator import generate_page
 from html_builder import markdown_to_html
-from reference_loader import extract_copy_from_html, save_reference, load_reference
+from reference_loader import extract_copy_from_html, extract_copy_from_image, get_or_extract_appearance, save_reference, load_reference, load_references_for_generation
 
 # ── 定数 ──────────────────────────────────────────────────────────────
 FUNNEL_LABELS = {
@@ -40,6 +40,7 @@ LENGTH_LABELS = {
     "long":  "ロング",
     "short": "ショート",
 }
+# 全ファネル共通の必須項目
 CRITICAL_FIELDS_LIST = [
     (["seller", "name"],       "販売者の名前",                          "例: 加藤かおる"),
     (["seller", "gender"],     "販売者の性別",                          "女性 または 男性"),
@@ -47,6 +48,35 @@ CRITICAL_FIELDS_LIST = [
     (["results", "headline"],  "実績の一言キャッチ（LPコピーに使用）",   "例: 元手1万円で月60万円"),
     (["seller", "appearance"], "販売者の外見・雰囲気（画像指示に使用）", "例: 30代女性、黒髪ショート、知的な雰囲気"),
 ]
+
+# ファネル種別ごとの追加必須項目
+CRITICAL_FIELDS_BY_TYPE = {
+    "sales_lp": [
+        (["pricing", "regular_price"],  "通常価格",                             "例: 298,000円"),
+        (["pricing", "special_price"],  "特別価格（割引後）",                   "例: 98,000円"),
+        (["pricing", "limit"],          "限定枠数・締め切り",                   "例: 先着80枠"),
+        (["pricing", "installment"],    "分割価格（あれば）",                   "例: 月々5,300円〜（最大24回）"),
+        (["results", "top_result"],     "最高実績（期間・金額）",               "例: 半年で1,092万円"),
+    ],
+    "video_funnel_ep1": [
+        (["product", "free_offer"],     "無料プレゼントの内容",                 "例: Sign Edge（通常30万円）を無償配布"),
+        (["cta", "question"],           "動画後の質問文",                       "例: 1000万円稼げたら何に使いたいですか？"),
+    ],
+    "video_funnel_ep2": [
+        (["product", "mechanism"],      "商品の仕組み・特徴（一言）",           "例: 97%の敗者ロジックを逆手に取る自動売買"),
+        (["cta", "question"],           "動画後の質問文",                       "例: 月60万円入ってきたら生活はどう変わりますか？"),
+    ],
+    "video_funnel_ep3": [
+        (["pricing", "regular_price"],  "通常価格",                             "例: 298,000円"),
+        (["pricing", "special_price"],  "特別価格（割引後）",                   "例: 98,000円"),
+        (["pricing", "limit"],          "限定枠数・締め切り",                   "例: 先着80枠・明日20時〜"),
+        (["cta", "question"],           "動画後の質問文・行動促進テキスト",     "例: 先行受付はこちらから"),
+    ],
+    "optin": [
+        (["product", "free_offer"],     "無料プレゼントの内容",                 "例: FX攻略キーワード図解集 など"),
+        (["cta", "question"],           "オプトイン後の質問または行動促進文",   "例: 今すぐ無料で受け取る"),
+    ],
+}
 
 AUTH_PASS = os.environ.get("FUNNEL_PASS", "funnel2024")
 
@@ -64,9 +94,10 @@ def _is_missing(val) -> bool:
     return str(val).strip().lower() in ("", "不明", "null", "none", "?", "-", "unknown")
 
 
-def check_missing_fields(config: dict) -> list:
+def check_missing_fields(config: dict, funnel_type: str = "") -> list:
+    fields = CRITICAL_FIELDS_LIST + CRITICAL_FIELDS_BY_TYPE.get(funnel_type, [])
     missing = []
-    for keys, label, example in CRITICAL_FIELDS_LIST:
+    for keys, label, example in fields:
         obj = config
         for k in keys[:-1]:
             obj = (obj or {}).get(k) or {}
@@ -159,8 +190,13 @@ if st.session_state.step == "input":
             )
 
         ref_uploaded = st.file_uploader(
-            "参考ファネル（任意・.html または .txt）— コピーのトーン・訴求強度の手本として使用",
-            type=["html", "htm", "txt"],
+            "参考ファネル（任意・.html / .txt / 画像）— コピーのトーン・訴求強度の手本として使用。画像は初回のみ解析して保存します",
+            type=["html", "htm", "txt", "png", "jpg", "jpeg", "webp"],
+        )
+
+        seller_photo = st.file_uploader(
+            "販売者の写真（任意・画像）— 外見・雰囲気を自動分析して画像指示に使用します",
+            type=["png", "jpg", "jpeg", "webp"],
         )
 
         submitted = st.form_submit_button("生成開始 →", type="primary", use_container_width=True)
@@ -176,19 +212,51 @@ if st.session_state.step == "input":
         # 参考ファネルの処理
         style_reference = ""
         if ref_uploaded:
-            raw = ref_uploaded.getvalue().decode("utf-8")
-            is_html = ref_uploaded.name.lower().endswith((".html", ".htm"))
-            style_reference = extract_copy_from_html(raw) if is_html else raw
-            save_reference(funnel_type, raw, is_html)
+            fname = ref_uploaded.name.lower()
+            is_image = fname.endswith((".png", ".jpg", ".jpeg", ".webp"))
+            is_html  = fname.endswith((".html", ".htm"))
+            if is_image:
+                media_map = {".png": "image/png", ".jpg": "image/jpeg",
+                             ".jpeg": "image/jpeg", ".webp": "image/webp"}
+                ext = "." + fname.rsplit(".", 1)[-1]
+                media_type = media_map.get(ext, "image/png")
+                with st.spinner("画像からテキストを抽出中（初回のみ）..."):
+                    extracted = extract_copy_from_image(ref_uploaded.getvalue(), media_type)
+                save_reference(funnel_type, extracted, is_html=False)
+            else:
+                raw = ref_uploaded.getvalue().decode("utf-8")
+                style_reference = extract_copy_from_html(raw) if is_html else raw
+                save_reference(funnel_type, raw, is_html)
+            # 保存後、同系列の全参考ファネルを統合して使う
+            style_reference = load_references_for_generation(funnel_type) or style_reference
         else:
-            style_reference = load_reference(funnel_type) or ""
+            style_reference = load_references_for_generation(funnel_type) or ""
 
         with st.spinner("台本から設定情報を抽出中...（30秒〜1分かかります）"):
             script_text = load_script(str(script_path))
             config_path = Path(tmp_dir) / (script_path.stem + ".yaml")
             config = extract_config_from_script(script_text, config_path)
 
-        missing = check_missing_fields(config)
+        # 販売者写真がアップロードされていれば外見・雰囲気を自動分析してセット（キャッシュ優先）
+        if seller_photo:
+            fname_p = seller_photo.name.lower()
+            media_map = {".png": "image/png", ".jpg": "image/jpeg",
+                         ".jpeg": "image/jpeg", ".webp": "image/webp"}
+            ext_p = "." + fname_p.rsplit(".", 1)[-1]
+            media_type_p = media_map.get(ext_p, "image/jpeg")
+            with st.spinner("販売者の写真を確認中..."):
+                appearance, from_cache = get_or_extract_appearance(
+                    seller_photo.getvalue(), media_type_p, seller_photo.name
+                )
+            if not isinstance(config.get("seller"), dict):
+                config["seller"] = {}
+            config["seller"]["appearance"] = appearance
+            if from_cache:
+                st.info(f"写真キャッシュを使用しました（API呼び出しなし）: {appearance}")
+            else:
+                st.success(f"写真を分析しました（キャッシュ保存済み）: {appearance}")
+
+        missing = check_missing_fields(config, funnel_type)
         next_step = "missing" if missing else "generating"
 
         st.session_state.update({
@@ -209,14 +277,46 @@ elif st.session_state.step == "missing":
     st.title("📄 追加情報の入力")
     st.info("台本から自動抽出できなかった項目を入力してください（Enterでスキップも可能です）")
 
+    # 販売者写真アップロード（フォームの外に配置）
+    st.markdown("**販売者の写真（任意）**")
+    appearance_photo = st.file_uploader(
+        "写真をアップロードすると外見・雰囲気を自動分析します（キャッシュ保存で2回目以降はAPI費用なし）",
+        type=["png", "jpg", "jpeg", "webp"],
+        key="missing_seller_photo",
+    )
+    if appearance_photo:
+        fname_p = appearance_photo.name.lower()
+        media_map = {".png": "image/png", ".jpg": "image/jpeg",
+                     ".jpeg": "image/jpeg", ".webp": "image/webp"}
+        ext_p = "." + fname_p.rsplit(".", 1)[-1]
+        media_type_p = media_map.get(ext_p, "image/jpeg")
+        with st.spinner("販売者の写真を確認中..."):
+            appearance, from_cache = get_or_extract_appearance(
+                appearance_photo.getvalue(), media_type_p, appearance_photo.name
+            )
+        label = "キャッシュ使用（API費用なし）" if from_cache else "分析完了・キャッシュ保存済み"
+        st.success(f"外見・雰囲気（{label}）: {appearance}")
+        st.session_state["seller_appearance_from_photo"] = appearance
+    else:
+        st.session_state.pop("seller_appearance_from_photo", None)
+
+    st.divider()
+
     with st.form("missing_form"):
         values = {}
         for field in st.session_state.missing_fields:
-            values[field["id"]] = st.text_input(
-                field["label"],
-                placeholder=field["example"],
-                key=f"field_{field['id']}",
-            )
+            if field["id"] == "seller__appearance":
+                values[field["id"]] = st.text_input(
+                    field["label"] + "（写真をアップロードした場合は空欄でOK）",
+                    placeholder=field["example"],
+                    key=f"field_{field['id']}",
+                )
+            else:
+                values[field["id"]] = st.text_input(
+                    field["label"],
+                    placeholder=field["example"],
+                    key=f"field_{field['id']}",
+                )
 
         col1, col2 = st.columns(2)
         with col1:
@@ -226,6 +326,11 @@ elif st.session_state.step == "missing":
 
     if confirmed:
         config = apply_missing_values(st.session_state.config, values)
+        # 写真から取得したappearanceがあれば上書き
+        if st.session_state.get("seller_appearance_from_photo"):
+            if not isinstance(config.get("seller"), dict):
+                config["seller"] = {}
+            config["seller"]["appearance"] = st.session_state["seller_appearance_from_photo"]
         st.session_state.config = config
         st.session_state.step = "generating"
         st.rerun()
