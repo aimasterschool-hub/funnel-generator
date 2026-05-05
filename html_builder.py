@@ -187,7 +187,38 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     }}
     .brief-copy-btn:hover {{ background: #2a2060; border-color: #6c5ce7; }}
 
-    /* ── セクションラベルバー（指示書用） ── */
+    /* ── モード切り替えバー ── */
+    .mode-bar {{
+      position: sticky; top: 0; z-index: 999;
+      background: #0a0a0a; border-bottom: 1px solid #2a2a2a;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 20px; gap: 12px;
+    }}
+    .mode-bar-title {{
+      font-size: 0.72rem; color: #555; letter-spacing: 0.1em;
+    }}
+    .mode-toggle-btn {{
+      display: flex; border: 1px solid #333; border-radius: 6px; overflow: hidden; cursor: pointer;
+    }}
+    .mode-toggle-btn span {{
+      padding: 5px 14px; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.08em; transition: background 0.15s, color 0.15s;
+      user-select: none;
+    }}
+    .mode-toggle-btn .btn-brief {{
+      background: #f0c040; color: #111;
+    }}
+    .mode-toggle-btn .btn-lp {{
+      background: transparent; color: #555;
+    }}
+    body.lp-mode .mode-toggle-btn .btn-brief {{
+      background: transparent; color: #555;
+    }}
+    body.lp-mode .mode-toggle-btn .btn-lp {{
+      background: #6c5ce7; color: #fff;
+    }}
+
+    /* ── 指示書モード専用要素 ── */
     .sec-label-bar {{
       margin: 0 -48px 28px;
       padding: 10px 48px;
@@ -210,7 +241,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       text-align: right; line-height: 1.5; max-width: 360px;
     }}
 
+    /* ── LPモード：指示書要素を非表示 ── */
+    body.lp-mode .sec-label-bar {{ display: none; }}
+    body.lp-mode details.brief-details {{ display: none; }}
+    body.lp-mode .sec {{ padding-top: 56px; }}
+
     .divider {{ height: 6px; background: linear-gradient(90deg, transparent, #2a2a2a 20%, #2a2a2a 80%, transparent); margin: 0; }}
+    body.lp-mode .divider {{ height: 0; }}
 
     /* ── 定型文ボックス ── */
     .el-fixed-text {{
@@ -224,6 +261,15 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   </style>
   <script>
     document.addEventListener('DOMContentLoaded', function() {{
+      // ── モード切り替え ──
+      var toggleBtn = document.getElementById('modeToggle');
+      if (toggleBtn) {{
+        toggleBtn.addEventListener('click', function() {{
+          document.body.classList.toggle('lp-mode');
+        }});
+      }}
+
+      // ── 画像指示書コピー ──
       document.querySelectorAll('.brief-copy-btn').forEach(function(btn) {{
         btn.addEventListener('click', function() {{
           var box = btn.closest('.brief-box');
@@ -255,6 +301,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   </script>
 </head>
 <body>
+  <div class="mode-bar">
+    <span class="mode-bar-title">📄 {title}</span>
+    <div class="mode-toggle-btn" id="modeToggle" title="表示モードを切り替え">
+      <span class="btn-brief">指示書モード</span>
+      <span class="btn-lp">LPプレビュー</span>
+    </div>
+  </div>
   <div class="lp-wrap">
 {body}
   </div>
