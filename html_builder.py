@@ -187,18 +187,30 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     }}
     .brief-copy-btn:hover {{ background: #2a2060; border-color: #6c5ce7; }}
 
-    /* ── セクション見出し（LP内装飾） ── */
-    .sec-heading {{
-      text-align: center; margin-bottom: 32px;
+    /* ── セクションラベルバー（指示書用） ── */
+    .sec-label-bar {{
+      margin: 0 -48px 28px;
+      padding: 10px 48px;
+      background: #1a1a1a;
+      border-top: 3px solid #f0c040;
+      border-bottom: 1px solid #2a2a2a;
+      display: flex; align-items: center; gap: 14px;
     }}
-    .sec-heading-label {{
-      display: inline-block; font-size: 0.72rem; font-weight: 700;
-      letter-spacing: 0.15em; color: #f0c040;
-      border: 1px solid #f0c040; padding: 3px 14px; border-radius: 20px;
-      margin-bottom: 10px;
+    .sec-label-num {{
+      font-size: 0.7rem; font-weight: 900; color: #111;
+      background: #f0c040; padding: 2px 9px; border-radius: 4px;
+      letter-spacing: 0.05em; white-space: nowrap;
+    }}
+    .sec-label-name {{
+      font-size: 1rem; font-weight: 900; color: #f0c040;
+      letter-spacing: 0.08em;
+    }}
+    .sec-label-role {{
+      font-size: 0.7rem; color: #666; margin-left: auto;
+      text-align: right; line-height: 1.5; max-width: 360px;
     }}
 
-    .divider {{ height: 3px; background: linear-gradient(90deg, transparent, #f0c040, transparent); margin: 0; }}
+    .divider {{ height: 6px; background: linear-gradient(90deg, transparent, #2a2a2a 20%, #2a2a2a 80%, transparent); margin: 0; }}
 
     /* ── 定型文ボックス ── */
     .el-fixed-text {{
@@ -353,12 +365,16 @@ def markdown_to_html(markdown_text: str, title: str, out_dir: str = "output") ->
 
 
 def _split_sections(lines):
-    sections, cur = [], {"name": "", "lines": []}
+    sections, cur = [], {"name": "", "role": "", "number": 0, "lines": []}
+    sec_count = 0
     for line in lines:
         if line.startswith("## "):
             if cur["name"]:
                 sections.append(cur)
-            cur = {"name": line[3:].strip(), "lines": []}
+            sec_count += 1
+            cur = {"name": line[3:].strip(), "role": "", "number": sec_count, "lines": []}
+        elif line.startswith("> 役割:"):
+            cur["role"] = line[6:].strip()
         elif not line.startswith("# "):
             cur["lines"].append(line)
     if cur["name"]:
@@ -367,10 +383,12 @@ def _split_sections(lines):
 
 
 def _render_section(sec, img_dir=None, img_counter=None):
-    name = sec["name"]
-    cls = SECTION_CLASS.get(name, "sec-white")
+    name   = sec["name"]
+    role   = sec.get("role", "")
+    number = sec.get("number", 0)
+    cls    = SECTION_CLASS.get(name, "sec-white")
     is_dark = name in DARK_SECTIONS
-    hl_cls = "dark" if is_dark else "light"
+    hl_cls  = "dark" if is_dark else "light"
 
     inner = _render_lines(sec["lines"], is_dark, hl_cls, name, img_dir, img_counter)
 
@@ -382,14 +400,24 @@ def _render_section(sec, img_dir=None, img_counter=None):
             f'    </div>'
         )
 
-    optional_badge = ""
+    optional_tag = ""
     if name in OPTIONAL_SECTIONS:
-        optional_badge = '<span style="font-size:0.65rem;color:#888;border:1px solid #555;padding:1px 8px;border-radius:10px;margin-left:8px;vertical-align:middle;">オプション</span>'
+        optional_tag = '<span style="font-size:0.65rem;color:#888;border:1px solid #555;padding:1px 8px;border-radius:10px;margin-left:6px;">オプション</span>'
+
+    num_label = f'SEC {number}' if number else 'SEC'
+    role_html = f'<div class="sec-label-role">{_esc(role)}</div>' if role else ''
+
+    label_bar = (
+        f'      <div class="sec-label-bar">'
+        f'<span class="sec-label-num">{num_label}</span>'
+        f'<span class="sec-label-name">{_esc(name)}</span>{optional_tag}'
+        f'{role_html}'
+        f'</div>\n'
+    )
 
     return (
         f'    <div class="sec {cls}">\n'
-        f'      <div class="sec-heading">'
-        f'<span class="sec-heading-label">{_esc(name)}</span>{optional_badge}</div>\n'
+        f'{label_bar}'
         f'{inner}\n'
         f'    </div>\n'
         f'    <div class="divider"></div>'
