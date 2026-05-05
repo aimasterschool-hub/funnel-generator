@@ -335,6 +335,13 @@ elif st.session_state.step == "missing":
         st.session_state.step = "generating"
         st.rerun()
     elif skipped:
+        # スキップ時も写真からのappearanceがあれば反映する
+        if st.session_state.get("seller_appearance_from_photo"):
+            config = st.session_state.config
+            if not isinstance(config.get("seller"), dict):
+                config["seller"] = {}
+            config["seller"]["appearance"] = st.session_state["seller_appearance_from_photo"]
+            st.session_state.config = config
         st.session_state.step = "generating"
         st.rerun()
 
