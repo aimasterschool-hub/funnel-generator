@@ -366,7 +366,7 @@ def _infer_kind(purpose: str) -> str:
     """purposeテキストから画像種別を推定する"""
     p = purpose
     if any(k in p for k in ["ヒーロー", "ファーストビュー", "バナー", "メインビジュアル"]):
-        return "ヒーローバナー"
+        return "ファーストビューバナー"
     if any(k in p for k in ["人物", "プロフィール", "顔", "写真"]):
         return "人物写真"
     if any(k in p for k in ["実績", "スクリーンショット", "エビデンス", "グラフ"]):
@@ -375,6 +375,8 @@ def _infer_kind(purpose: str) -> str:
         return "説明図解"
     if any(k in p for k in ["商品", "ツール", "アイコン"]):
         return "商品イメージ"
+    if any(k in p for k in ["セクション全体", "チェックアウト", "先着", "登録ボタン", "CTA", "特典"]):
+        return "テキストを画像化"
     return "画像"
 
 
@@ -541,7 +543,7 @@ def _generate_image_brief(
         "以下のフィールドをすべて含むJSONのみ出力してください。\n"
         "{{\n"
         '  "purpose": "画像の用途",\n'
-        '  "kind": "種別（例: ヒーロービジュアル / 人物写真 / 商品イメージ / 説明図解 など）",\n'
+        '  "kind": "種別（例: ファーストビューバナー / 人物写真 / 商品イメージ / 説明図解 / テキストを画像化 など）",\n'
         '  "size": "サイズ（幅は必ず1040px固定。高さと比率を明記。例: 1040×900px（約16:14））",\n'
         '  "background": "背景・全体の雰囲気・色調の詳細説明（Midjourneyプロンプトに使える具体的な視覚描写。役割メモや要素リストをそのまま書かないこと）",\n'
         '  "subject": "人物や被写体の詳細説明（不要なら null）",\n'

@@ -147,9 +147,10 @@ def t_image_brief_editable():
         "- **補足**: テスト",
     ]
     html = _render_img(block)
-    assert "brief-details" in html, "details タグがない"
+    assert "img-brief-card" in html, "img-brief-card がない（常時表示カードに変更済み）"
+    assert "img-lp-placeholder" in html, "img-lp-placeholder がない"
     assert "brief-val" in html, "brief-val クラスがない"
-    assert "▼ 画像指示書を確認する" in html, "サマリーテキストがない"
+    assert "📷 画像指示書" in html, "画像指示書タイトルがない"
     assert 'contenteditable="true"' in html, "contenteditable がない（編集不可）"
     assert "brief-copy-btn" in html, "コピーボタンがない"
 
