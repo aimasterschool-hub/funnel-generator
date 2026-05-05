@@ -213,7 +213,10 @@ IMAGE_BRIEF_TEMPLATE = """### 画像ブロック: {purpose}
 """
 
 
-def generate_page(structure: dict, script: str, page_type: str, length: str = "long") -> "tuple[str, list]":
+def generate_page(
+    structure: dict, script: str, page_type: str,
+    length: str = "long", style_reference: str = "",
+) -> "tuple[str, list]":
     """
     1ページ分のMarkdownコンテンツ（テキスト＋画像指示書）を生成して返す。
     各セクションを個別のAPIコールで処理する。
@@ -225,14 +228,19 @@ def generate_page(structure: dict, script: str, page_type: str, length: str = "l
     all_image_briefs = []
 
     for section in sections:
-        section_md, image_briefs = _generate_section(section, script, page_label, length)
+        section_md, image_briefs = _generate_section(
+            section, script, page_label, length, style_reference=style_reference
+        )
         lines.append(section_md)
         all_image_briefs.extend(image_briefs)
 
     return "\n".join(lines), all_image_briefs
 
 
-def _generate_section(section: dict, script: str, page_label: str, length: str = "long") -> "tuple[str, list]":
+def _generate_section(
+    section: dict, script: str, page_label: str,
+    length: str = "long", style_reference: str = "",
+) -> "tuple[str, list]":
     """
     1セクション分のMarkdownと画像指示書リストを生成して返す。
     elements を定義順に処理し、fixed_content / video_embed / image / AI text を適切に扱う。
@@ -316,7 +324,8 @@ def _generate_section(section: dict, script: str, page_label: str, length: str =
         if batch:
             model = MODEL_HAIKU if display_name in HAIKU_SECTIONS else MODEL_SONNET
             text_content = _generate_text_content(
-                display_name, role, batch, script, page_label, length, model
+                display_name, role, batch, script, page_label, length, model,
+                style_reference=style_reference,
             )
             lines.append(text_content)
 
@@ -408,6 +417,7 @@ def _generate_text_content(
     page_label: str,
     length: str = "long",
     model: str = MODEL_SONNET,
+    style_reference: str = "",
 ) -> str:
     """セクションのテキストコンテンツをClaude APIで生成（プロンプトキャッシュ対応）"""
     elements_desc = "\n".join(
@@ -443,6 +453,19 @@ def _generate_text_content(
             "cache_control": {"type": "ephemeral"},
         }
     ]
+
+    # 参考コピーをキャッシュ外ブロックとして追加（キャッシュを汚さない）
+    if style_reference:
+        system.append({
+            "type": "text",
+            "text": (
+                "【参考コピー（トーン・リズム・訴求強度の手本）】\n"
+                "以下は高品質なLPファネルの実際のコピーです。"
+                "このトーン・改行リズム・訴求の強さ・言葉選びを参考にしてください。"
+                "内容（数字・名前・商品名）は情報源に基づいて置き換えること。\n\n"
+                f"{style_reference[:3000]}"
+            ),
+        })
 
     user_prompt = (
         f"「{page_label}」の「{section_name}」セクションのテキストを作成してください。\n\n"

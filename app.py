@@ -24,6 +24,7 @@ from outline import get_outline
 from analyzer import get_sample_structure
 from generator import generate_page
 from html_builder import markdown_to_html
+from reference_loader import extract_copy_from_html, save_reference, load_reference
 
 # ── 定数 ──────────────────────────────────────────────────────────────
 FUNNEL_LABELS = {
@@ -110,16 +111,17 @@ if not check_auth():
 
 # ── セッション初期化 ───────────────────────────────────────────────────
 _defaults = {
-    "step":         "input",
-    "script_text":  "",
-    "script_name":  "",
-    "config":       {},
-    "missing_fields": [],
-    "funnel_type":  "optin",
-    "length":       "long",
-    "md_content":   "",
-    "html_content": "",
-    "tmp_dir":      None,
+    "step":            "input",
+    "script_text":     "",
+    "script_name":     "",
+    "config":          {},
+    "missing_fields":  [],
+    "funnel_type":     "optin",
+    "length":          "long",
+    "md_content":      "",
+    "html_content":    "",
+    "tmp_dir":         None,
+    "style_reference": "",
 }
 for _k, _v in _defaults.items():
     if _k not in st.session_state:
@@ -156,6 +158,11 @@ if st.session_state.step == "input":
                 format_func=lambda x: LENGTH_LABELS[x],
             )
 
+        ref_uploaded = st.file_uploader(
+            "参考ファネル（任意・.html または .txt）— コピーのトーン・訴求強度の手本として使用",
+            type=["html", "htm", "txt"],
+        )
+
         submitted = st.form_submit_button("生成開始 →", type="primary", use_container_width=True)
 
     if submitted and not uploaded:
@@ -166,6 +173,16 @@ if st.session_state.step == "input":
         script_path = Path(tmp_dir) / uploaded.name
         script_path.write_bytes(uploaded.getvalue())
 
+        # 参考ファネルの処理
+        style_reference = ""
+        if ref_uploaded:
+            raw = ref_uploaded.getvalue().decode("utf-8")
+            is_html = ref_uploaded.name.lower().endswith((".html", ".htm"))
+            style_reference = extract_copy_from_html(raw) if is_html else raw
+            save_reference(funnel_type, raw, is_html)
+        else:
+            style_reference = load_reference(funnel_type) or ""
+
         with st.spinner("台本から設定情報を抽出中...（30秒〜1分かかります）"):
             script_text = load_script(str(script_path))
             config_path = Path(tmp_dir) / (script_path.stem + ".yaml")
@@ -175,14 +192,15 @@ if st.session_state.step == "input":
         next_step = "missing" if missing else "generating"
 
         st.session_state.update({
-            "step":          next_step,
-            "script_text":   script_text,
-            "script_name":   uploaded.name,
-            "config":        config,
-            "missing_fields": missing,
-            "funnel_type":   funnel_type,
-            "length":        length,
-            "tmp_dir":       tmp_dir,
+            "step":            next_step,
+            "script_text":     script_text,
+            "script_name":     uploaded.name,
+            "config":          config,
+            "missing_fields":  missing,
+            "funnel_type":     funnel_type,
+            "length":          length,
+            "tmp_dir":         tmp_dir,
+            "style_reference": style_reference,
         })
         st.rerun()
 
@@ -238,9 +256,15 @@ elif st.session_state.step == "generating":
             st.write(f"✅ {n_sections} セクション構成")
 
             st.write(f"各セクションのコンテンツを生成中（{n_sections} 回 API 呼び出し）...")
-            config_text = config_to_text(config)
-            combined    = "\n\n".join(filter(None, [config_text, outline]))
-            md_content, _ = generate_page(structure, combined, funnel_type, length)
+            config_text     = config_to_text(config)
+            combined        = "\n\n".join(filter(None, [config_text, outline]))
+            style_reference = st.session_state.get("style_reference", "")
+            if style_reference:
+                st.write("📎 参考ファネルをスタイル参照として使用中")
+            md_content, _ = generate_page(
+                structure, combined, funnel_type, length,
+                style_reference=style_reference,
+            )
             st.write("✅ Markdown 生成完了")
 
             st.write("HTML を生成中...")
