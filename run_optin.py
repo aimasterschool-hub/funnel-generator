@@ -346,6 +346,19 @@ def config_to_text(config: dict) -> str:
             lines.append(f"経済的背景:\n{str(audience['economic_context']).strip()}")
         lines.append("")
 
+    pricing = config.get("pricing", {}) or {}
+    if pricing:
+        lines.append("【価格・限定情報（必ずそのまま使うこと）】")
+        if pricing.get("regular_price"):
+            lines.append(f"通常価格: {pricing['regular_price']}")
+        if pricing.get("special_price"):
+            lines.append(f"特別価格（割引後）: {pricing['special_price']}")
+        if pricing.get("installment"):
+            lines.append(f"分割価格: {pricing['installment']}")
+        if pricing.get("limit"):
+            lines.append(f"限定枠数・締め切り: {pricing['limit']}")
+        lines.append("")
+
     cta = config.get("cta", {}) or {}
     if cta:
         lines.append("【CTA情報】")
