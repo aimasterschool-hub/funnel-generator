@@ -148,29 +148,52 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       letter-spacing: 0.08em;
     }}
 
-    /* ── 画像指示書（折りたたみ） ── */
-    details.brief-details {{ margin: 0; }}
-    details.brief-details > summary {{
-      background: #222; color: #aaa; font-size: 0.72rem;
-      padding: 6px 16px; cursor: pointer; text-align: right;
-      user-select: none; list-style: none; display: block;
+    /* ── 画像指示書カード（常時表示） ── */
+    .img-brief-card {{
+      width: 100%; background: #080e1c;
+      border-top: 2px solid #1e3a6a; border-bottom: 1px solid #1a2a4a;
     }}
-    details.brief-details > summary::-webkit-details-marker {{ display: none; }}
-    details.brief-details > summary:hover {{ background: #333; }}
-    /* コンテンツの表示・非表示をCSSで明示制御 */
-    details.brief-details > .brief-box {{ display: none; }}
-    details.brief-details[open] > .brief-box {{ display: block; }}
+    .img-brief-header {{
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 20px; background: #0f1a35;
+      border-bottom: 1px solid #1a2a4a;
+    }}
+    .img-brief-title {{
+      font-size: 0.72rem; font-weight: 900; color: #7ab4ff;
+      letter-spacing: 0.12em; margin-right: auto;
+    }}
+    .img-brief-badge {{
+      font-size: 0.65rem; font-weight: 700; padding: 3px 10px; border-radius: 4px;
+      white-space: nowrap;
+    }}
+    .img-brief-badge.kind {{ background: #1e3a6a; color: #7ab4ff; }}
+    .img-brief-badge.size {{ background: #0a2a1a; color: #5cf070; }}
+    .img-brief-copy-area {{
+      padding: 14px 20px; border-bottom: 1px solid #1a2a4a;
+      background: #070d1a;
+    }}
+    .img-brief-copy-label {{
+      font-size: 0.65rem; color: #f0c040; font-weight: 700;
+      letter-spacing: 0.12em; margin-bottom: 8px; display: block;
+    }}
+    .img-brief-copy-text {{
+      font-size: 1.05rem; font-weight: 900; color: #fff;
+      line-height: 1.9; white-space: pre-line;
+      padding: 12px 16px; border-radius: 6px;
+      border-left: 3px solid #f0c040;
+      background: rgba(240,192,64,0.06);
+    }}
     .brief-box {{
-      background: #1a1a1a; border-top: 1px solid #333;
-      padding: 16px 20px; font-size: 0.78rem; color: #bbb;
+      background: #080e1c;
+      padding: 12px 20px 16px; font-size: 0.78rem; color: #bbb;
     }}
     .brief-box table {{ width: 100%; border-collapse: collapse; }}
     .brief-box td {{
-      padding: 5px 10px; border-bottom: 1px solid #2a2a2a;
+      padding: 5px 10px; border-bottom: 1px solid #141e30;
       vertical-align: top;
     }}
     .brief-box td:first-child {{
-      color: #f0c040; font-weight: 700; width: 130px; white-space: nowrap;
+      color: #7ab4ff; font-weight: 700; width: 130px; white-space: nowrap;
     }}
     .brief-val {{
       outline: none; padding: 3px 6px; border-radius: 4px;
@@ -186,6 +209,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       font-size: 0.7rem; padding: 4px 12px; border-radius: 4px; cursor: pointer;
     }}
     .brief-copy-btn:hover {{ background: #2a2060; border-color: #6c5ce7; }}
+    /* LPモード: 指示書カードを非表示・プレースホルダーを表示 */
+    body.lp-mode .img-brief-card {{ display: none; }}
+    .img-lp-placeholder {{ display: none; }}
+    body.lp-mode .img-lp-placeholder {{ display: block; }}
 
     /* ── モード切り替えバー ── */
     .mode-bar {{
@@ -243,7 +270,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
     /* ── LPモード：指示書要素を非表示 ── */
     body.lp-mode .sec-label-bar {{ display: none; }}
-    body.lp-mode details.brief-details {{ display: none; }}
     body.lp-mode .sec {{ padding-top: 56px; }}
 
     .divider {{ height: 6px; background: linear-gradient(90deg, transparent, #2a2a2a 20%, #2a2a2a 80%, transparent); margin: 0; }}
@@ -609,7 +635,6 @@ def _render_img(block_lines, section_name="", img_dir=None, img_counter=None):
             current_key = m.group(1)
             fields[current_key] = m.group(2).strip()
         elif current_key and line.strip() and not line.startswith("-"):
-            # 前フィールドの続き行（多行コピーなど）
             fields[current_key] = fields[current_key] + "\n" + line.strip()
 
     size = fields.get("サイズ", "幅1040px")
@@ -625,49 +650,49 @@ def _render_img(block_lines, section_name="", img_dir=None, img_counter=None):
         if v and v not in ("なし", "null")
     )
 
-    # 画像プレースホルダー
-    placeholder = (
-        f'<div style="'
-        f'background:#1e1e2e;border:2px dashed #3a3a5a;'
-        f'display:flex;align-items:center;justify-content:center;'
-        f'min-height:180px;width:100%;'
-        f'">'
+    # 画像に載せるテキストブロック（コピーある時のみ）
+    copy_html = ""
+    if copy:
+        copy_html = (
+            f'<div class="img-brief-copy-area">'
+            f'<span class="img-brief-copy-label">📝 画像に載せるテキスト</span>'
+            f'<div class="img-brief-copy-text">{_esc(copy)}</div>'
+            f'</div>'
+        )
+
+    # 指示書カード（指示書モードで常時表示）
+    brief_card = (
+        f'<div class="img-brief-card">'
+        f'<div class="img-brief-header">'
+        f'<span class="img-brief-title">📷 画像指示書</span>'
+        f'<span class="img-brief-badge kind">{_esc(kind)}</span>'
+        f'<span class="img-brief-badge size">📐 {_esc(size)}</span>'
+        f'</div>'
+        f'{copy_html}'
+        f'<div class="brief-box">'
+        f'<div class="brief-toolbar"><button class="brief-copy-btn">📋 指示書をコピー</button></div>'
+        f'<table>{rows}</table>'
+        f'</div>'
+        f'</div>'
+    )
+
+    # プレースホルダー（LPプレビューモード用）
+    lp_placeholder = (
+        f'<div class="img-lp-placeholder">'
+        f'<div style="background:#1e1e2e;border:2px dashed #3a3a5a;'
+        f'display:flex;align-items:center;justify-content:center;min-height:180px;width:100%;">'
         f'<div style="text-align:center;color:#555;">'
         f'<div style="font-size:2rem;margin-bottom:8px;">🖼</div>'
         f'<div style="font-size:0.8rem;letter-spacing:0.1em;">ここに画像</div>'
         f'<div style="font-size:0.72rem;margin-top:4px;color:#444;">{_esc(size)} ／ {_esc(kind)}</div>'
         f'</div></div>'
-    )
-
-    # 画像内テキスト（コピー）＋サイズを画像の下にテキストで表示
-    copy_block = (
-        f'<div style="background:#12122a;border-left:3px solid #f0c040;padding:16px 20px;margin-top:0;">'
-    )
-    if copy:
-        copy_block += (
-            f'<div style="font-size:0.7rem;color:#f0c040;font-weight:700;'
-            f'letter-spacing:0.1em;margin-bottom:8px;">画像に掲載するテキスト</div>'
-            f'<div style="font-size:1.1rem;font-weight:700;color:#fff;line-height:1.8;'
-            f'white-space:pre-line;margin-bottom:12px;">{_esc(copy)}</div>'
-        )
-    copy_block += (
-        f'<div style="font-size:0.75rem;color:#888;">'
-        f'📐 {_esc(size)}</div>'
         f'</div>'
     )
 
     return (
         f'      <div style="margin: 0 -48px; width: calc(100% + 96px);">\n'
-        f'        {placeholder}\n'
-        f'        {copy_block}\n'
-        f'        <details class="brief-details">\n'
-        f'          <summary>▼ 画像指示書を確認する</summary>\n'
-        f'          <div class="brief-box">'
-        f'<div class="brief-toolbar">'
-        f'<button class="brief-copy-btn">📋 指示書をコピー</button>'
-        f'</div>'
-        f'<table>{rows}</table></div>\n'
-        f'        </details>\n'
+        f'        {brief_card}\n'
+        f'        {lp_placeholder}\n'
         f'      </div>'
     )
 
