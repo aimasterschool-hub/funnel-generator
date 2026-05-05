@@ -143,6 +143,7 @@ if not check_auth():
 # ── セッション初期化 ───────────────────────────────────────────────────
 _defaults = {
     "step":            "input",
+    "input_mode":      "script",
     "script_text":     "",
     "script_name":     "",
     "config":          {},
@@ -167,13 +168,29 @@ with st.sidebar:
                 del st.session_state[k]
         st.rerun()
 
-# ── ステップ1: 台本アップロード ────────────────────────────────────────
+# ── ステップ1: ファイルアップロード ───────────────────────────────────────
 if st.session_state.step == "input":
     st.title("📄 ファネル生成ツール")
 
+    # 入力形式の選択（フォーム外：変更で即リフレッシュ）
+    input_mode = st.radio(
+        "入力形式",
+        ["script", "outline"],
+        format_func=lambda x: {
+            "script":  "📄 台本アップロード（AIが自動で骨子を生成）",
+            "outline": "📋 骨子アップロード（骨子生成スキップ・精度UP・API費用削減）",
+        }[x],
+        horizontal=True,
+        key="input_mode_radio",
+    )
+
     with st.form("input_form"):
-        st.subheader("台本をアップロードして生成する")
-        uploaded = st.file_uploader("台本ファイル（.docx または .txt）", type=["docx", "txt"])
+        if input_mode == "script":
+            st.caption("台本（.docx / .txt）をアップロードしてください。AIが自動で骨子を生成してからLP生成します。")
+            uploaded = st.file_uploader("台本ファイル（.docx または .txt）", type=["docx", "txt"])
+        else:
+            st.caption("台本を元に事前作成した骨子（.md / .txt / .docx）をアップロードしてください。骨子生成ステップをスキップします。")
+            uploaded = st.file_uploader("骨子ファイル（.md / .txt / .docx）", type=["md", "txt", "docx"])
 
         col1, col2 = st.columns(2)
         with col1:
@@ -202,7 +219,8 @@ if st.session_state.step == "input":
         submitted = st.form_submit_button("生成開始 →", type="primary", use_container_width=True)
 
     if submitted and not uploaded:
-        st.error("台本ファイルをアップロードしてください")
+        label = "台本" if input_mode == "script" else "骨子"
+        st.error(f"{label}ファイルをアップロードしてください")
 
     if submitted and uploaded:
         tmp_dir = tempfile.mkdtemp()
@@ -232,7 +250,8 @@ if st.session_state.step == "input":
         else:
             style_reference = load_references_for_generation(funnel_type) or ""
 
-        with st.spinner("台本から設定情報を抽出中...（30秒〜1分かかります）"):
+        src_label = "台本" if input_mode == "script" else "骨子"
+        with st.spinner(f"{src_label}から設定情報を抽出中...（30秒〜1分かかります）"):
             script_text = load_script(str(script_path))
             config_path = Path(tmp_dir) / (script_path.stem + ".yaml")
             config = extract_config_from_script(script_text, config_path)
@@ -261,6 +280,7 @@ if st.session_state.step == "input":
 
         st.session_state.update({
             "step":            next_step,
+            "input_mode":      input_mode,
             "script_text":     script_text,
             "script_name":     uploaded.name,
             "config":          config,
@@ -275,7 +295,8 @@ if st.session_state.step == "input":
 # ── ステップ2: 不足フィールド入力 ─────────────────────────────────────
 elif st.session_state.step == "missing":
     st.title("📄 追加情報の入力")
-    st.info("台本から自動抽出できなかった項目を入力してください（Enterでスキップも可能です）")
+    src_label = "台本" if st.session_state.get("input_mode", "script") == "script" else "骨子"
+    st.info(f"{src_label}から自動抽出できなかった項目を入力してください（Enterでスキップも可能です）")
 
     # 販売者写真アップロード（フォームの外に配置）
     st.markdown("**販売者の写真（任意）**")
@@ -356,11 +377,17 @@ elif st.session_state.step == "generating":
     length      = st.session_state.length
     tmp_dir     = st.session_state.tmp_dir or "."
 
+    input_mode = st.session_state.get("input_mode", "script")
+
     try:
         with st.status("コンテンツを生成中...", expanded=True) as status:
-            st.write("台本骨子を生成中...")
-            outline, cached = get_outline(script_text, script_name)
-            st.write(f"✅ 骨子{'（キャッシュ）' if cached else 'を生成しました'}")
+            if input_mode == "outline":
+                outline = script_text
+                st.write("✅ 骨子ファイルをそのまま使用（生成スキップ）")
+            else:
+                st.write("台本から骨子を生成中...")
+                outline, cached = get_outline(script_text, script_name)
+                st.write(f"✅ 骨子{'（キャッシュ）' if cached else 'を生成しました'}")
 
             st.write("サンプル構造を読み込み中...")
             structure = get_sample_structure(funnel_type, length)
