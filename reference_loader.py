@@ -106,10 +106,11 @@ def get_or_extract_appearance(image_bytes: bytes, media_type: str, filename: str
     return appearance, False
 
 
-def save_reference(funnel_type: str, raw_content: str, is_html: bool) -> None:
+def save_reference(funnel_type: str, raw_content: str, is_html: bool, suffix: str = "") -> None:
     """参考ファネルのコピーテキストをreferences/に保存する"""
     REFERENCES_DIR.mkdir(exist_ok=True)
-    path = REFERENCES_DIR / f"{funnel_type}_ref.txt"
+    name = f"{funnel_type}_{suffix}_ref.txt" if suffix else f"{funnel_type}_ref.txt"
+    path = REFERENCES_DIR / name
     text = extract_copy_from_html(raw_content) if is_html else raw_content
     path.write_text(text, encoding="utf-8")
 

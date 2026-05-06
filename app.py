@@ -369,16 +369,17 @@ if st.session_state.step == "input":
             with st.spinner("参考ファネルを解析中（初回のみ）..."):
                 for f in ref_uploaded:
                     fname = f.name.lower()
+                    suffix = Path(f.name).stem
                     is_image = fname.endswith((".png", ".jpg", ".jpeg", ".webp"))
                     is_html  = fname.endswith((".html", ".htm"))
                     if is_image:
                         ext = "." + fname.rsplit(".", 1)[-1]
                         media_type = media_map.get(ext, "image/png")
                         extracted = extract_copy_from_image(f.getvalue(), media_type)
-                        save_reference(funnel_type, extracted, is_html=False)
+                        save_reference(funnel_type, extracted, is_html=False, suffix=suffix)
                     else:
                         raw = f.getvalue().decode("utf-8")
-                        save_reference(funnel_type, raw, is_html)
+                        save_reference(funnel_type, raw, is_html, suffix=suffix)
             # 保存後、同系列の全参考ファネルを統合して使う
             style_reference = load_references_for_generation(funnel_type) or ""
         else:
