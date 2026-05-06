@@ -373,13 +373,14 @@ elif st.session_state.step == "missing":
 
 # ── ステップ3: 生成 ────────────────────────────────────────────────────
 elif st.session_state.step == "generating":
-    st.title("📄 生成中...")
+    funnel_type = st.session_state.funnel_type
+    length      = st.session_state.length
+    _gen_label  = f"{FUNNEL_LABELS.get(funnel_type, funnel_type)}（{LENGTH_LABELS.get(length, length)}）"
+    st.title(f"📄 生成中... {_gen_label}")
 
     config      = st.session_state.config
     script_text = st.session_state.script_text
     script_name = st.session_state.script_name
-    funnel_type = st.session_state.funnel_type
-    length      = st.session_state.length
     tmp_dir     = st.session_state.tmp_dir or "."
 
     input_mode = st.session_state.get("input_mode", "script")
