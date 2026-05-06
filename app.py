@@ -300,6 +300,17 @@ if st.session_state.step == "input":
             st.info(f"📂 保存済みファイルを使用: {selected_saved}")
             uploaded = None
 
+        if selected_saved == "新規アップロード":
+            do_save = st.checkbox("アップロードしたファイルを保存する（次回から再利用できます）")
+            save_name = st.text_input(
+                "保存名",
+                placeholder="空白の場合は元のファイル名で保存",
+                disabled=not do_save,
+            ) if do_save else ""
+        else:
+            do_save = False
+            save_name = ""
+
         col1, col2 = st.columns(2)
         with col1:
             funnel_type = st.selectbox(
@@ -348,8 +359,9 @@ if st.session_state.step == "input":
         else:
             script_path = Path(tmp_dir) / uploaded.name
             script_path.write_bytes(uploaded.getvalue())
-            # 新規アップロードを保存
-            (SAVED_SCRIPTS_DIR / uploaded.name).write_bytes(uploaded.getvalue())
+            if do_save:
+                fname_to_save = save_name.strip() or uploaded.name
+                (SAVED_SCRIPTS_DIR / fname_to_save).write_bytes(uploaded.getvalue())
 
         # 参考ファネルの処理
         style_reference = ""
