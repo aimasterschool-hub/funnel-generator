@@ -107,6 +107,27 @@ def check_missing_fields(config: dict, funnel_type: str = "") -> list:
     return missing
 
 
+def build_step2_fields(config: dict, funnel_type: str) -> list:
+    """Step2に表示するフィールド一覧を構築（抽出済みも含め全件表示）"""
+    all_defs = CRITICAL_FIELDS_LIST + CRITICAL_FIELDS_BY_TYPE.get(funnel_type, [])
+    fields = []
+    for keys, label, example in all_defs:
+        obj = config
+        for k in keys[:-1]:
+            obj = (obj or {}).get(k) or {}
+        val = (obj or {}).get(keys[-1]) or ""
+        current = "" if _is_missing(val) else str(val)
+        fields.append({
+            "id":         "__".join(keys),
+            "label":      label,
+            "example":    example,
+            "keys":       keys,
+            "value":      current,
+            "is_missing": _is_missing(val),
+        })
+    return fields
+
+
 def apply_missing_values(config: dict, values: dict) -> dict:
     for field_id, value in values.items():
         value = value.strip()
@@ -147,9 +168,9 @@ _defaults = {
     "script_text":     "",
     "script_name":     "",
     "config":          {},
-    "missing_fields":  [],
     "funnel_type":     "optin",
     "length":          "long",
+    "use_opus":        False,
     "md_content":      "",
     "html_content":    "",
     "tmp_dir":         None,
@@ -205,6 +226,11 @@ if st.session_state.step == "input":
                 list(LENGTH_LABELS.keys()),
                 format_func=lambda x: LENGTH_LABELS[x],
             )
+
+        use_opus = st.checkbox(
+            "🚀 高精度モード（Opus）— 文章生成のみOpus使用・API費用が約1.7倍になります",
+            value=False,
+        )
 
         ref_uploaded = st.file_uploader(
             "参考ファネル（任意・.html / .txt / 画像）— コピーのトーン・訴求強度の手本として使用。画像は初回のみ解析して保存します",
@@ -275,28 +301,31 @@ if st.session_state.step == "input":
             else:
                 st.success(f"写真を分析しました（キャッシュ保存済み）: {appearance}")
 
-        missing = check_missing_fields(config, funnel_type)
-        next_step = "missing" if missing else "generating"
-
         st.session_state.update({
-            "step":            next_step,
+            "step":            "missing",
             "input_mode":      input_mode,
             "script_text":     script_text,
             "script_name":     uploaded.name,
             "config":          config,
-            "missing_fields":  missing,
             "funnel_type":     funnel_type,
             "length":          length,
+            "use_opus":        use_opus,
             "tmp_dir":         tmp_dir,
             "style_reference": style_reference,
         })
         st.rerun()
 
-# ── ステップ2: 不足フィールド入力 ─────────────────────────────────────
+# ── ステップ2: 生成情報の確認・入力 ────────────────────────────────────
 elif st.session_state.step == "missing":
-    st.title("📄 追加情報の入力")
-    src_label = "台本" if st.session_state.get("input_mode", "script") == "script" else "骨子"
-    st.info(f"{src_label}から自動抽出できなかった項目を入力してください（Enterでスキップも可能です）")
+    funnel_type_s2 = st.session_state.funnel_type
+    st.title(f"📄 生成情報の確認・入力（{FUNNEL_LABELS.get(funnel_type_s2, funnel_type_s2)}）")
+
+    step2_fields = build_step2_fields(st.session_state.config, funnel_type_s2)
+    missing_count = sum(1 for f in step2_fields if f["is_missing"])
+    if missing_count > 0:
+        st.warning(f"⚠️ {missing_count}件が未入力です。入力すると生成精度が上がります。抽出済みの項目も確認・修正できます。")
+    else:
+        st.success("✅ すべての情報が抽出済みです。内容を確認して生成してください。")
 
     # 販売者写真アップロード（フォームの外に配置）
     current_appearance = (st.session_state.config.get("seller") or {}).get("appearance", "")
@@ -330,29 +359,30 @@ elif st.session_state.step == "missing":
 
     with st.form("missing_form"):
         values = {}
-        for field in st.session_state.missing_fields:
-            if field["id"] == "seller__appearance":
-                values[field["id"]] = st.text_input(
-                    field["label"] + "（写真をアップロードした場合は空欄でOK）",
-                    placeholder=field["example"],
-                    key=f"field_{field['id']}",
-                )
+        for field in step2_fields:
+            if field["is_missing"]:
+                label_text = f"⚠️ {field['label']}"
             else:
-                values[field["id"]] = st.text_input(
-                    field["label"],
-                    placeholder=field["example"],
-                    key=f"field_{field['id']}",
-                )
+                label_text = f"✅ {field['label']}（抽出済み・修正可）"
+
+            if field["id"] == "seller__appearance":
+                label_text += "（写真をアップロードした場合は空欄でOK）"
+
+            values[field["id"]] = st.text_input(
+                label_text,
+                value=field["value"],
+                placeholder=field["example"],
+                key=f"field_{field['id']}",
+            )
 
         col1, col2 = st.columns(2)
         with col1:
             confirmed = st.form_submit_button("この内容で生成する →", type="primary", use_container_width=True)
         with col2:
-            skipped = st.form_submit_button("スキップして生成する", use_container_width=True)
+            skipped = st.form_submit_button("確認せずに生成する", use_container_width=True)
 
-    if confirmed:
-        config = apply_missing_values(st.session_state.config, values)
-        # 写真から取得したappearanceがあれば上書き
+    if confirmed or skipped:
+        config = apply_missing_values(st.session_state.config, values) if confirmed else st.session_state.config
         if st.session_state.get("seller_appearance_from_photo"):
             if not isinstance(config.get("seller"), dict):
                 config["seller"] = {}
@@ -360,23 +390,15 @@ elif st.session_state.step == "missing":
         st.session_state.config = config
         st.session_state.step = "generating"
         st.rerun()
-    elif skipped:
-        # スキップ時も写真からのappearanceがあれば反映する
-        if st.session_state.get("seller_appearance_from_photo"):
-            config = st.session_state.config
-            if not isinstance(config.get("seller"), dict):
-                config["seller"] = {}
-            config["seller"]["appearance"] = st.session_state["seller_appearance_from_photo"]
-            st.session_state.config = config
-        st.session_state.step = "generating"
-        st.rerun()
 
 # ── ステップ3: 生成 ────────────────────────────────────────────────────
 elif st.session_state.step == "generating":
     funnel_type = st.session_state.funnel_type
     length      = st.session_state.length
+    use_opus    = st.session_state.get("use_opus", False)
     _gen_label  = f"{FUNNEL_LABELS.get(funnel_type, funnel_type)}（{LENGTH_LABELS.get(length, length)}）"
-    st.title(f"📄 生成中... {_gen_label}")
+    _opus_label = "　🚀 高精度Opusモード" if use_opus else ""
+    st.title(f"📄 生成中... {_gen_label}{_opus_label}")
 
     config      = st.session_state.config
     script_text = st.session_state.script_text
@@ -406,9 +428,11 @@ elif st.session_state.step == "generating":
             style_reference = st.session_state.get("style_reference", "")
             if style_reference:
                 st.write("📎 参考ファネルをスタイル参照として使用中")
+            text_model = "claude-opus-4-7" if use_opus else "claude-sonnet-4-6"
             md_content, _ = generate_page(
                 structure, combined, funnel_type, length,
                 style_reference=style_reference,
+                text_model=text_model,
             )
             st.write("✅ Markdown 生成完了")
 

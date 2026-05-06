@@ -215,10 +215,12 @@ IMAGE_BRIEF_TEMPLATE = """### 画像ブロック: {purpose}
 def generate_page(
     structure: dict, script: str, page_type: str,
     length: str = "long", style_reference: str = "",
+    text_model: str = MODEL_SONNET,
 ) -> "tuple[str, list]":
     """
     1ページ分のMarkdownコンテンツ（テキスト＋画像指示書）を生成して返す。
     各セクションを個別のAPIコールで処理する。
+    text_model: セクション文章生成に使うモデル（画像指示書・キャッチコピーは常にSonnet）
     """
     page_label = structure.get("page_label", page_type)
     sections = structure.get("sections", [])
@@ -228,7 +230,8 @@ def generate_page(
 
     for section in sections:
         section_md, image_briefs = _generate_section(
-            section, script, page_label, length, style_reference=style_reference
+            section, script, page_label, length,
+            style_reference=style_reference, text_model=text_model,
         )
         lines.append(section_md)
         all_image_briefs.extend(image_briefs)
@@ -239,6 +242,7 @@ def generate_page(
 def _generate_section(
     section: dict, script: str, page_label: str,
     length: str = "long", style_reference: str = "",
+    text_model: str = MODEL_SONNET,
 ) -> "tuple[str, list]":
     """
     1セクション分のMarkdownと画像指示書リストを生成して返す。
@@ -321,7 +325,7 @@ def _generate_section(
             i += 1
 
         if batch:
-            model = MODEL_HAIKU if display_name in HAIKU_SECTIONS else MODEL_SONNET
+            model = MODEL_HAIKU if display_name in HAIKU_SECTIONS else text_model
             text_content = _generate_text_content(
                 display_name, role, batch, script, page_label, length, model,
                 style_reference=style_reference,
