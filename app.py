@@ -219,17 +219,58 @@ if st.session_state.step == "input":
         key="selected_theme",
     )
     if THEMES[selected_theme]["color"] is None:
-        accent_color = st.color_picker("メインカラー", "#f0c040", key="custom_accent")
+        SWATCHES = [
+            ("赤",       "#dc2626"),
+            ("青",       "#2563eb"),
+            ("黒",       "#1a1a1a"),
+            ("白",       "#f0f0f0"),
+            ("オレンジ", "#ea580c"),
+            ("緑",       "#16a34a"),
+            ("黄",       "#eab308"),
+            ("紫",       "#9333ea"),
+            ("ピンク",   "#e04080"),
+        ]
+        if "swatch_color" not in st.session_state:
+            st.session_state["swatch_color"] = "#f0c040"
+        st.caption("よく使う色")
+        sw_cols = st.columns(len(SWATCHES))
+        for i, (sw_name, sw_hex) in enumerate(SWATCHES):
+            with sw_cols[i]:
+                if st.button(sw_name, key=f"sw_{i}", use_container_width=True):
+                    st.session_state["swatch_color"] = sw_hex
+        accent_color = st.color_picker(
+            "または自由に選ぶ",
+            value=st.session_state["swatch_color"],
+            key="custom_accent_picker",
+        )
+        st.session_state["swatch_color"] = accent_color
     else:
         accent_color = THEMES[selected_theme]["color"]
 
+    # 保存済み台本・骨子
+    SAVED_SCRIPTS_DIR = Path("saved_scripts")
+    SAVED_SCRIPTS_DIR.mkdir(exist_ok=True)
+    saved_files = sorted(SAVED_SCRIPTS_DIR.glob("*.*"))
+    saved_names = [f.name for f in saved_files]
+    saved_options = ["新規アップロード"] + saved_names
+    selected_saved = st.selectbox(
+        "保存済み台本・骨子から選択（過去にアップロードしたファイルを再利用）",
+        saved_options,
+        key="saved_script_select",
+    )
+
     with st.form("input_form"):
-        if input_mode == "script":
-            st.caption("台本（.docx / .txt）をアップロードしてください。AIが自動で骨子を生成してからLP生成します。")
-            uploaded = st.file_uploader("台本ファイル（.docx または .txt）", type=["docx", "txt"])
+        label_upload = "台本" if input_mode == "script" else "骨子"
+        if selected_saved == "新規アップロード":
+            if input_mode == "script":
+                st.caption("台本（.docx / .txt）をアップロードしてください。AIが自動で骨子を生成してからLP生成します。")
+                uploaded = st.file_uploader("台本ファイル（.docx または .txt）", type=["docx", "txt"])
+            else:
+                st.caption("台本を元に事前作成した骨子（.md / .txt / .docx）をアップロードしてください。骨子生成ステップをスキップします。")
+                uploaded = st.file_uploader("骨子ファイル（.md / .txt / .docx）", type=["md", "txt", "docx"])
         else:
-            st.caption("台本を元に事前作成した骨子（.md / .txt / .docx）をアップロードしてください。骨子生成ステップをスキップします。")
-            uploaded = st.file_uploader("骨子ファイル（.md / .txt / .docx）", type=["md", "txt", "docx"])
+            st.info(f"📂 保存済みファイルを使用: {selected_saved}")
+            uploaded = None
 
         col1, col2 = st.columns(2)
         with col1:
@@ -263,14 +304,24 @@ if st.session_state.step == "input":
 
         submitted = st.form_submit_button("生成開始 →", type="primary", use_container_width=True)
 
-    if submitted and not uploaded:
+    if submitted and selected_saved == "新規アップロード" and not uploaded:
         label = "台本" if input_mode == "script" else "骨子"
         st.error(f"{label}ファイルをアップロードしてください")
 
-    if submitted and uploaded:
+    _use_saved = submitted and selected_saved != "新規アップロード"
+    _use_uploaded = submitted and uploaded
+
+    if _use_saved or _use_uploaded:
         tmp_dir = tempfile.mkdtemp()
-        script_path = Path(tmp_dir) / uploaded.name
-        script_path.write_bytes(uploaded.getvalue())
+        if _use_saved:
+            saved_path = SAVED_SCRIPTS_DIR / selected_saved
+            script_path = Path(tmp_dir) / selected_saved
+            script_path.write_bytes(saved_path.read_bytes())
+        else:
+            script_path = Path(tmp_dir) / uploaded.name
+            script_path.write_bytes(uploaded.getvalue())
+            # 新規アップロードを保存
+            (SAVED_SCRIPTS_DIR / uploaded.name).write_bytes(uploaded.getvalue())
 
         # 参考ファネルの処理
         style_reference = ""
@@ -320,11 +371,12 @@ if st.session_state.step == "input":
             else:
                 st.success(f"写真を分析しました（キャッシュ保存済み）: {appearance}")
 
+        script_name = selected_saved if _use_saved else uploaded.name
         st.session_state.update({
             "step":            "missing",
             "input_mode":      input_mode,
             "script_text":     script_text,
-            "script_name":     uploaded.name,
+            "script_name":     script_name,
             "config":          config,
             "funnel_type":     funnel_type,
             "length":          length,
