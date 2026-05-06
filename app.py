@@ -253,11 +253,39 @@ if st.session_state.step == "input":
     saved_files = sorted(SAVED_SCRIPTS_DIR.glob("*.*"))
     saved_names = [f.name for f in saved_files]
     saved_options = ["新規アップロード"] + saved_names
-    selected_saved = st.selectbox(
-        "保存済み台本・骨子から選択（過去にアップロードしたファイルを再利用）",
-        saved_options,
-        key="saved_script_select",
-    )
+
+    col_sel, col_del = st.columns([4, 1])
+    with col_sel:
+        selected_saved = st.selectbox(
+            "保存済み台本・骨子から選択（過去にアップロードしたファイルを再利用）",
+            saved_options,
+            key="saved_script_select",
+        )
+    with col_del:
+        st.write("")
+        st.write("")
+        delete_clicked = (
+            selected_saved != "新規アップロード"
+            and st.button("🗑️ 削除", key="delete_saved_btn", use_container_width=True)
+        )
+
+    if delete_clicked:
+        st.session_state["pending_delete"] = selected_saved
+
+    if st.session_state.get("pending_delete"):
+        target = st.session_state["pending_delete"]
+        st.warning(f"「{target}」を削除してよいですか？")
+        col_yes, col_no = st.columns(2)
+        with col_yes:
+            if st.button("はい、削除する", key="confirm_delete_yes", type="primary", use_container_width=True):
+                (SAVED_SCRIPTS_DIR / target).unlink(missing_ok=True)
+                del st.session_state["pending_delete"]
+                st.session_state.pop("saved_script_select", None)
+                st.rerun()
+        with col_no:
+            if st.button("キャンセル", key="confirm_delete_no", use_container_width=True):
+                del st.session_state["pending_delete"]
+                st.rerun()
 
     with st.form("input_form"):
         label_upload = "台本" if input_mode == "script" else "骨子"
