@@ -235,6 +235,7 @@ if st.session_state.step == "input":
         ref_uploaded = st.file_uploader(
             "参考ファネル（任意・.html / .txt / 画像）— コピーのトーン・訴求強度の手本として使用。画像は初回のみ解析して保存します",
             type=["html", "htm", "txt", "png", "jpg", "jpeg", "webp"],
+            accept_multiple_files=True,
         )
 
         seller_photo = st.file_uploader(
@@ -256,23 +257,23 @@ if st.session_state.step == "input":
         # 参考ファネルの処理
         style_reference = ""
         if ref_uploaded:
-            fname = ref_uploaded.name.lower()
-            is_image = fname.endswith((".png", ".jpg", ".jpeg", ".webp"))
-            is_html  = fname.endswith((".html", ".htm"))
-            if is_image:
-                media_map = {".png": "image/png", ".jpg": "image/jpeg",
-                             ".jpeg": "image/jpeg", ".webp": "image/webp"}
-                ext = "." + fname.rsplit(".", 1)[-1]
-                media_type = media_map.get(ext, "image/png")
-                with st.spinner("画像からテキストを抽出中（初回のみ）..."):
-                    extracted = extract_copy_from_image(ref_uploaded.getvalue(), media_type)
-                save_reference(funnel_type, extracted, is_html=False)
-            else:
-                raw = ref_uploaded.getvalue().decode("utf-8")
-                style_reference = extract_copy_from_html(raw) if is_html else raw
-                save_reference(funnel_type, raw, is_html)
+            media_map = {".png": "image/png", ".jpg": "image/jpeg",
+                         ".jpeg": "image/jpeg", ".webp": "image/webp"}
+            with st.spinner("参考ファネルを解析中（初回のみ）..."):
+                for f in ref_uploaded:
+                    fname = f.name.lower()
+                    is_image = fname.endswith((".png", ".jpg", ".jpeg", ".webp"))
+                    is_html  = fname.endswith((".html", ".htm"))
+                    if is_image:
+                        ext = "." + fname.rsplit(".", 1)[-1]
+                        media_type = media_map.get(ext, "image/png")
+                        extracted = extract_copy_from_image(f.getvalue(), media_type)
+                        save_reference(funnel_type, extracted, is_html=False)
+                    else:
+                        raw = f.getvalue().decode("utf-8")
+                        save_reference(funnel_type, raw, is_html)
             # 保存後、同系列の全参考ファネルを統合して使う
-            style_reference = load_references_for_generation(funnel_type) or style_reference
+            style_reference = load_references_for_generation(funnel_type) or ""
         else:
             style_reference = load_references_for_generation(funnel_type) or ""
 
