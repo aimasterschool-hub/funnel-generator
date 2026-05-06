@@ -287,8 +287,17 @@ if st.session_state.step == "input":
                 del st.session_state["pending_delete"]
                 st.rerun()
 
+    if selected_saved == "新規アップロード":
+        do_save = st.checkbox("アップロードしたファイルを保存する（次回から再利用できます）", key="do_save_check")
+        if do_save:
+            save_name = st.text_input("保存名", placeholder="空白の場合は元のファイル名で保存", key="save_name_input")
+        else:
+            save_name = ""
+    else:
+        do_save = False
+        save_name = ""
+
     with st.form("input_form"):
-        label_upload = "台本" if input_mode == "script" else "骨子"
         if selected_saved == "新規アップロード":
             if input_mode == "script":
                 st.caption("台本（.docx / .txt）をアップロードしてください。AIが自動で骨子を生成してからLP生成します。")
@@ -299,17 +308,6 @@ if st.session_state.step == "input":
         else:
             st.info(f"📂 保存済みファイルを使用: {selected_saved}")
             uploaded = None
-
-        if selected_saved == "新規アップロード":
-            do_save = st.checkbox("アップロードしたファイルを保存する（次回から再利用できます）")
-            save_name = st.text_input(
-                "保存名",
-                placeholder="空白の場合は元のファイル名で保存",
-                disabled=not do_save,
-            ) if do_save else ""
-        else:
-            do_save = False
-            save_name = ""
 
         col1, col2 = st.columns(2)
         with col1:
