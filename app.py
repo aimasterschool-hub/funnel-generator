@@ -73,8 +73,8 @@ CRITICAL_FIELDS_BY_TYPE = {
         (["cta", "question"],           "動画後の質問文・行動促進テキスト",     "例: 先行受付はこちらから"),
     ],
     "optin": [
-        (["product", "free_offer"],     "無料プレゼントの内容",                 "例: FX攻略キーワード図解集 など"),
-        (["cta", "question"],           "オプトイン後の質問または行動促進文",   "例: 今すぐ無料で受け取る"),
+        (["product", "free_offer"],     "特典・情報の名称（無料プレゼントあり→特典名 / 情報公開型→登録で受け取れる情報・手法の名称）", "例（無料プレゼント）: FX攻略キーワード図解集 / 例（情報公開型）: 月60万円を叩き出した手法"),
+        (["cta", "question"],           "オプトイン後の行動促進文",             "例: 今すぐ受け取る / 手法を受け取る"),
     ],
 }
 
@@ -299,7 +299,12 @@ elif st.session_state.step == "missing":
     st.info(f"{src_label}から自動抽出できなかった項目を入力してください（Enterでスキップも可能です）")
 
     # 販売者写真アップロード（フォームの外に配置）
-    st.markdown("**販売者の写真（任意）**")
+    current_appearance = (st.session_state.config.get("seller") or {}).get("appearance", "")
+    if not _is_missing(current_appearance):
+        st.success(f"✅ 外見・雰囲気 設定済み: {current_appearance}")
+        st.caption("変更する場合のみ写真をアップロードしてください")
+    else:
+        st.markdown("**販売者の写真（任意）**")
     appearance_photo = st.file_uploader(
         "写真をアップロードすると外見・雰囲気を自動分析します（キャッシュ保存で2回目以降はAPI費用なし）",
         type=["png", "jpg", "jpeg", "webp"],
