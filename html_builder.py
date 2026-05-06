@@ -48,7 +48,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     /* ── テキスト要素 ── */
     .el-banner {{
       text-align: center; font-size: 0.85rem; font-weight: 700;
-      letter-spacing: 0.12em; color: #f0c040; margin-bottom: 10px;
+      letter-spacing: 0.12em; color: {accent}; margin-bottom: 10px;
     }}
     .el-headline {{
       text-align: center; font-size: 2.4rem; font-weight: 900;
@@ -67,12 +67,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     }}
     .el-number {{
       text-align: center; font-size: 3rem; font-weight: 900;
-      color: #f0c040; margin: 20px 0; letter-spacing: -0.02em;
+      color: {accent}; margin: 20px 0; letter-spacing: -0.02em;
     }}
     .el-profile {{
       font-size: 0.93rem; line-height: 2; max-width: 720px; margin: 18px auto;
       padding: 20px 24px;
-      border-left: 4px solid #f0c040;
+      border-left: 4px solid {accent};
       background: rgba(255,255,255,0.04);
       border-radius: 0 8px 8px 0;
     }}
@@ -86,7 +86,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     }}
     .el-bullets li::before {{
       content: "▶"; position: absolute; left: 0;
-      color: #f0c040; font-size: 0.75rem; top: 13px;
+      color: {accent}; font-size: 0.75rem; top: 13px;
     }}
     .el-steps {{ max-width: 720px; margin: 18px auto; list-style: none; counter-reset: st; }}
     .el-steps li {{
@@ -99,7 +99,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       content: counter(st);
       position: absolute; left: 0; top: 10px;
       width: 36px; height: 36px; border-radius: 50%;
-      background: #f0c040; color: #111;
+      background: {accent}; color: #111;
       font-weight: 900; font-size: 1rem;
       display: flex; align-items: center; justify-content: center;
     }}
@@ -173,14 +173,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       background: #070d1a;
     }}
     .img-brief-copy-label {{
-      font-size: 0.65rem; color: #f0c040; font-weight: 700;
+      font-size: 0.65rem; color: {accent}; font-weight: 700;
       letter-spacing: 0.12em; margin-bottom: 8px; display: block;
     }}
     .img-brief-copy-text {{
       font-size: 1.05rem; font-weight: 900; color: #fff;
       line-height: 1.9; white-space: pre-line;
       padding: 12px 16px; border-radius: 6px;
-      border-left: 3px solid #f0c040;
+      border-left: 3px solid {accent};
       background: rgba(240,192,64,0.06);
     }}
     .brief-box {{
@@ -233,7 +233,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       user-select: none;
     }}
     .mode-toggle-btn .btn-brief {{
-      background: #f0c040; color: #111;
+      background: {accent}; color: #111;
     }}
     .mode-toggle-btn .btn-lp {{
       background: transparent; color: #555;
@@ -250,17 +250,17 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       margin: 0 -48px 28px;
       padding: 10px 48px;
       background: #1a1a1a;
-      border-top: 3px solid #f0c040;
+      border-top: 3px solid {accent};
       border-bottom: 1px solid #2a2a2a;
       display: flex; align-items: center; gap: 14px;
     }}
     .sec-label-num {{
       font-size: 0.7rem; font-weight: 900; color: #111;
-      background: #f0c040; padding: 2px 9px; border-radius: 4px;
+      background: {accent}; padding: 2px 9px; border-radius: 4px;
       letter-spacing: 0.05em; white-space: nowrap;
     }}
     .sec-label-name {{
-      font-size: 1rem; font-weight: 900; color: #f0c040;
+      font-size: 1rem; font-weight: 900; color: {accent};
       letter-spacing: 0.08em;
     }}
     .sec-label-role {{
@@ -416,7 +416,7 @@ OPTIONAL_SECTIONS = {
 FOOTER_LINK_SECTIONS = {"プライバシーポリシー", "特定商取引法に基づく表記"}
 
 
-def markdown_to_html(markdown_text: str, title: str, out_dir: str = "output") -> str:
+def markdown_to_html(markdown_text: str, title: str, out_dir: str = "output", accent_color: str = "#f0c040") -> str:
     lines = markdown_text.split("\n")
     sections = _split_sections(lines)
     parts = []
@@ -438,7 +438,7 @@ def markdown_to_html(markdown_text: str, title: str, out_dir: str = "output") ->
         )
         parts.append(f'    <div class="sec-footer-bar">{links}</div>')
 
-    return HTML_TEMPLATE.format(title=_esc(title), body="\n".join(parts))
+    return HTML_TEMPLATE.format(title=_esc(title), body="\n".join(parts), accent=accent_color)
 
 
 def _split_sections(lines):

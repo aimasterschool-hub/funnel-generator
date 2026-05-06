@@ -232,6 +232,24 @@ if st.session_state.step == "input":
             value=False,
         )
 
+        THEMES = {
+            "高級感（デフォルト）": {"color": "#f0c040", "desc": "黒 × ゴールド｜プレミアム・希少性を演出"},
+            "プロフェッショナル":   {"color": "#a0b4c8", "desc": "黒 × シルバー｜知性・信頼感を演出"},
+            "エネルギー":           {"color": "#ff4433", "desc": "黒 × レッド｜行動喚起・緊迫感を演出"},
+            "ナチュラル":           {"color": "#6abf69", "desc": "黒 × グリーン｜安心感・健康・自然を演出"},
+            "カスタム":             {"color": None,       "desc": "下のカラーピッカーで自由に指定"},
+        }
+        theme_options = list(THEMES.keys())
+        selected_theme = st.selectbox(
+            "カラーテーマ",
+            theme_options,
+            format_func=lambda k: f"{k}　—　{THEMES[k]['desc']}",
+        )
+        if THEMES[selected_theme]["color"] is None:
+            accent_color = st.color_picker("メインカラー", "#f0c040")
+        else:
+            accent_color = THEMES[selected_theme]["color"]
+
         ref_uploaded = st.file_uploader(
             "参考ファネル（任意・.html / .txt / 画像）— コピーのトーン・訴求強度の手本として使用。画像は初回のみ解析して保存します",
             type=["html", "htm", "txt", "png", "jpg", "jpeg", "webp"],
@@ -313,6 +331,7 @@ if st.session_state.step == "input":
             "use_opus":        use_opus,
             "tmp_dir":         tmp_dir,
             "style_reference": style_reference,
+            "accent_color":    accent_color,
         })
         st.rerun()
 
@@ -440,7 +459,8 @@ elif st.session_state.step == "generating":
             st.write("HTML を生成中...")
             type_label   = FUNNEL_LABELS.get(funnel_type, funnel_type)
             length_label = LENGTH_LABELS.get(length, length)
-            html_content = markdown_to_html(md_content, f"{type_label}（{length_label}）", tmp_dir)
+            accent_color = st.session_state.get("accent_color", "#f0c040")
+            html_content = markdown_to_html(md_content, f"{type_label}（{length_label}）", tmp_dir, accent_color=accent_color)
             st.write("✅ HTML 生成完了")
 
             status.update(label="✅ 生成完了！", state="complete")
