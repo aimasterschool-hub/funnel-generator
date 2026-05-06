@@ -205,6 +205,24 @@ if st.session_state.step == "input":
         key="input_mode_radio",
     )
 
+    THEMES = {
+        "高級感（デフォルト）": {"color": "#f0c040", "desc": "黒 × ゴールド｜プレミアム・希少性を演出"},
+        "プロフェッショナル":   {"color": "#a0b4c8", "desc": "黒 × シルバー｜知性・信頼感を演出"},
+        "エネルギー":           {"color": "#ff4433", "desc": "黒 × レッド｜行動喚起・緊迫感を演出"},
+        "ナチュラル":           {"color": "#6abf69", "desc": "黒 × グリーン｜安心感・健康・自然を演出"},
+        "カスタム":             {"color": None,       "desc": "カラーピッカーで自由に指定"},
+    }
+    selected_theme = st.selectbox(
+        "カラーテーマ",
+        list(THEMES.keys()),
+        format_func=lambda k: f"{k}　—　{THEMES[k]['desc']}",
+        key="selected_theme",
+    )
+    if THEMES[selected_theme]["color"] is None:
+        accent_color = st.color_picker("メインカラー", "#f0c040", key="custom_accent")
+    else:
+        accent_color = THEMES[selected_theme]["color"]
+
     with st.form("input_form"):
         if input_mode == "script":
             st.caption("台本（.docx / .txt）をアップロードしてください。AIが自動で骨子を生成してからLP生成します。")
@@ -231,24 +249,6 @@ if st.session_state.step == "input":
             "🚀 高精度モード（Opus）— 文章生成のみOpus使用・API費用が約1.7倍になります",
             value=False,
         )
-
-        THEMES = {
-            "高級感（デフォルト）": {"color": "#f0c040", "desc": "黒 × ゴールド｜プレミアム・希少性を演出"},
-            "プロフェッショナル":   {"color": "#a0b4c8", "desc": "黒 × シルバー｜知性・信頼感を演出"},
-            "エネルギー":           {"color": "#ff4433", "desc": "黒 × レッド｜行動喚起・緊迫感を演出"},
-            "ナチュラル":           {"color": "#6abf69", "desc": "黒 × グリーン｜安心感・健康・自然を演出"},
-            "カスタム":             {"color": None,       "desc": "下のカラーピッカーで自由に指定"},
-        }
-        theme_options = list(THEMES.keys())
-        selected_theme = st.selectbox(
-            "カラーテーマ",
-            theme_options,
-            format_func=lambda k: f"{k}　—　{THEMES[k]['desc']}",
-        )
-        if THEMES[selected_theme]["color"] is None:
-            accent_color = st.color_picker("メインカラー", "#f0c040")
-        else:
-            accent_color = THEMES[selected_theme]["color"]
 
         ref_uploaded = st.file_uploader(
             "参考ファネル（任意・.html / .txt / 画像）— コピーのトーン・訴求強度の手本として使用。画像は初回のみ解析して保存します",
