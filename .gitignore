@@ -7,3 +7,4 @@ outlines/
 output/
 ~$*.docx
 .env
+.claude/settings.local.json

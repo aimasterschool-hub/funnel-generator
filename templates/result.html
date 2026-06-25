@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>生成結果</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+      background: #0f0f1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+    header {
+      background: #1a1a2e;
+      border-bottom: 1px solid #2a2a4a;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 { font-size: 1rem; font-weight: 700; color: #fff; }
+    .meta { font-size: 0.8rem; color: #888; }
+    .actions { display: flex; gap: 10px; align-items: center; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #2a2a4a;
+      color: #ccc;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+      color: #fff;
+    }
+    .btn-success {
+      background: linear-gradient(135deg, #00b894, #55efc4);
+      color: #0a2e20;
+    }
+    .btn-disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    /* Status bar */
+    #statusBar {
+      background: #12122a;
+      border-bottom: 1px solid #2a2a4a;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+    }
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid #333;
+      border-top-color: #6c5ce7;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #stepText { color: #ccc; flex: 1; }
+    .status-done { color: #00b894; font-weight: 600; }
+    .status-error { color: #f44; font-weight: 600; }
+
+    /* Preview */
+    #previewWrap {
+      padding: 24px;
+      display: none;
+    }
+    #previewWrap h2 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+    #previewFrame {
+      width: 100%;
+      height: calc(100vh - 200px);
+      min-height: 600px;
+      border: 1px solid #2a2a4a;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    /* Error panel */
+    #errorPanel {
+      display: none;
+      margin: 32px auto;
+      max-width: 600px;
+      background: rgba(220,50,50,0.1);
+      border: 1px solid rgba(220,50,50,0.3);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    #errorPanel h2 { color: #f88; margin-bottom: 12px; }
+    #errorPanel pre {
+      font-size: 0.8rem;
+      color: #faa;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .back-link {
+      display: inline-block;
+      margin: 16px 0 0;
+      color: #a29bfe;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .back-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>ファネル生成ツール</h1>
+    <div class="meta">
+      {{ job.script_name }} ／ {{ job.funnel_type }} ／ {{ job.length }}
+    </div>
+  </div>
+  <div class="actions">
+    <a href="/" class="btn btn-outline">← トップへ戻る</a>
+    <button id="shareBtn" class="btn btn-outline btn-disabled" onclick="createShare()">🔗 共有リンク</button>
+    <a id="dlMd"   class="btn btn-outline btn-disabled" href="#">MD ダウンロード</a>
+    <a id="dlHtml" class="btn btn-primary btn-disabled" href="#">HTML ダウンロード</a>
+  </div>
+</header>
+
+<div id="statusBar">
+  <div class="spinner" id="spinner"></div>
+  <span id="stepText">処理を開始しています...</span>
+</div>
+
+<div id="errorPanel">
+  <h2>エラーが発生しました</h2>
+  <pre id="errorText"></pre>
+  <a href="/" class="back-link">← トップへ戻る</a>
+</div>
+
+<div id="previewWrap">
+  <h2>プレビュー</h2>
+  <iframe id="previewFrame" sandbox="allow-same-origin allow-scripts"></iframe>
+</div>
+
+<script>
+  const JOB_ID = "{{ job_id }}";
+  const spinner   = document.getElementById('spinner');
+  const stepText  = document.getElementById('stepText');
+  const statusBar = document.getElementById('statusBar');
+  const dlMd      = document.getElementById('dlMd');
+  const dlHtml    = document.getElementById('dlHtml');
+  const shareBtn  = document.getElementById('shareBtn');
+  const previewWrap = document.getElementById('previewWrap');
+  const previewFrame = document.getElementById('previewFrame');
+  const errorPanel = document.getElementById('errorPanel');
+  const errorText  = document.getElementById('errorText');
+
+  async function poll() {
+    try {
+      const res = await fetch(`/api/status/${JOB_ID}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      stepText.textContent = data.step || '処理中...';
+
+      if (data.status === 'done') {
+        spinner.style.display = 'none';
+        stepText.textContent = '✅ 生成が完了しました';
+        stepText.className = 'status-done';
+
+        dlMd.href = `/api/download/${JOB_ID}/md`;
+        dlMd.classList.remove('btn-disabled');
+        dlHtml.href = `/api/download/${JOB_ID}/html`;
+        dlHtml.classList.remove('btn-disabled');
+        shareBtn.classList.remove('btn-disabled');
+
+        const previewRes = await fetch(`/api/preview/${JOB_ID}`);
+        const html = await previewRes.text();
+        previewFrame.srcdoc = html;
+        previewWrap.style.display = 'block';
+
+      } else if (data.status === 'error') {
+        spinner.style.display = 'none';
+        stepText.textContent = '❌ エラーが発生しました';
+        stepText.className = 'status-error';
+        errorText.textContent = data.error || '不明なエラー';
+        errorPanel.style.display = 'block';
+
+      } else {
+        setTimeout(poll, 2000);
+      }
+    } catch (err) {
+      stepText.textContent = `通信エラー: ${err.message}`;
+      setTimeout(poll, 4000);
+    }
+  }
+
+  poll();
+
+  async function createShare() {
+    shareBtn.disabled = true;
+    shareBtn.textContent = '生成中...';
+    try {
+      const res = await fetch(`/api/share/${JOB_ID}`, { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const { token } = await res.json();
+      const url = `${location.origin}/share/${token}`;
+      await navigator.clipboard.writeText(url);
+      shareBtn.textContent = '✅ URLをコピーしました';
+      setTimeout(() => {
+        shareBtn.textContent = '🔗 共有リンク';
+        shareBtn.disabled = false;
+      }, 3000);
+    } catch (err) {
+      shareBtn.textContent = 'エラー';
+      shareBtn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
