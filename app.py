@@ -78,7 +78,7 @@ CRITICAL_FIELDS_BY_TYPE = {
     ],
 }
 
-AUTH_PASS = os.environ.get("FUNNEL_PASS", "funnel2024")
+AUTH_PASS = os.environ.get("FUNNEL_PASS")
 
 # ── ページ設定 ─────────────────────────────────────────────────────────
 st.set_page_config(
