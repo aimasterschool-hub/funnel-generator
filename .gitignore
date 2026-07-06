@@ -1,10 +1,31 @@
+# --- python / venv ---
 .venv/
 __pycache__/
 *.pyc
 .DS_Store
+
+# --- 生成物・作業中 ---
 jobs/
 outlines/
 output/
 ~$*.docx
+
+# --- secrets（規約 §4）---
 .env
+.env.*
+!.env.example
 .claude/settings.local.json
+
+# --- 著作物由来・顧客データ保存フォルダ（規約 §4 拡張・監査バックログ A1/A2/D2 対応）---
+# references/：参考ファネル本文（著作物由来）
+references/
+# saved_scripts/：Streamlit UI が保存する顧客台本 .docx
+saved_scripts/
+# seller_photos/：販売者写真アップロード先
+seller_photos/
+# samples/**/*.PNG など：参考LPスクショ（第三者著作物混入の可能性）
+samples/**/*.PNG
+samples/**/*.JPG
+samples/**/*.jpg
+samples/**/*.jpeg
+samples/**/*.png
