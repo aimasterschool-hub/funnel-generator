@@ -1,5 +1,19 @@
 # HANDOFF — funnel-generator
-最終更新：2026-07-03
+最終更新：2026-07-06（監査バックログ v1 対応・著作物由来ファイル追跡剥がし）
+
+## 今回完了したこと（2026-07-06 4プロジェクト横断監査セッション）
+- `~/projects/improvement_backlog_v1.md` の監査項目 F01/F03/F04/F08/F16/D2 を適用（`9732e45`）
+  - **F01 🔴**：`references/` を `.gitignore` に追加し `git rm --cached -r references/` で
+    追跡剥がし（10ファイル。HANDOFF記載「著作物由来・外部公開しない」に反する状態を解消）
+  - **D2 🔴**：`samples/optin/long/IMG_2985〜2992.PNG` を追跡剥がし
+    （第三者LP「LIFE BUSINESS SUPPORT」の Chatwork スクショと判明。ローカルには残存）
+  - **F03**：`.gitignore` に `saved_scripts/` `seller_photos/` `samples/**/*.PNG` 等を予防追加
+  - **F04**：`.env.example` 追加（`ANTHROPIC_API_KEY` `FUNNEL_PASS` 雛形）
+  - **F08**：`requirements.txt` に上限指定（`anthropic>=0.40,<1.0` 等）
+  - **F16**：一時解析スクリプト `_analyze_optin.py` 削除（旧世代モデル `claude-sonnet-4-5` 残置対応）
+- **C3 保留**：Streamlit Cloud の `FUNNEL_PASS` secret 設定状況が未確認のため未適用
+  （現稼働アプリは一時的に「使わないなら閉じる」方針検討中・鍵ローテ後に判断）
+- 監査残タスクは `~/projects/improvement_backlog_v1.md §2.2` に「F02/F05〜F24」として登録済
 
 ## プロジェクト位置づけ
 マスターブループリント v1.1「ライン2：投資商品・ローンチ制作」の中核。
