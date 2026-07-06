@@ -1,4 +1,26 @@
 # funnel-generator — Claude Code 作業ガイド
+最終更新：2026-07-06
+
+## 0. セッション開始時の前提（自動読込・ユーザー明示不要）
+
+- **グローバル設定**：`~/.claude/CLAUDE.md`（開発規約・ブループリント・secrets・自発リマインド §7.1）
+- **セッション状態**：本ディレクトリの `HANDOFF.md`（毎セッション終了時に更新→push）
+- **改善バックログ**：`~/projects/improvement_backlog_v1.md` の **§1（横断）** と **§2.2（funnel-generator 個別 F01〜F24）**、**§5.3 Phase 4 移行前必須** を必要に応じ参照
+
+## 0.1 このプロジェクトの位置づけ
+
+マスターブループリント（`~/projects/master_system_blueprint_v*.md` 最新版）**ライン2：投資商品・ローンチ制作**の中核。台本 docx→optin LP／VSL／販売LP を Claude API で自動生成する Streamlit アプリ。**product_launch_generator の後工程**（ローンチ台本→本ツールでファネル各ページ化）。
+
+## 0.2 このプロジェクト固有の注意（監査バックログ抜粋）
+
+- 🔴 過去に `.git/config` にトークン直書き事故 → SSH 化済み。トークン系は**絶対に .git/config に書かない**（規約 §4）
+- 🔴 `references/` `saved_scripts/` `seller_photos/` `samples/**/*.PNG` は著作物由来・顧客データを含みうる → `.gitignore` で追跡防止済み（F01/F03/D2 対応・2026-07-06）
+- 🟡 モデルID が 8ファイルに散在（F02）→ 変更時は必ず全 grep：`grep -RIEn 'claude-(sonnet|haiku|opus)-' --include='*.py'`
+- 🟡 エントリポイント4本（`main.py` は旧シグネチャで壊れかけ・`generate.py`／`run_optin.py`／`app.py`）→ どれが「今使う」入口かは HANDOFF §運用方針で確認（実装は F07 未対応）
+- 🟡 Anthropic クライアント6ファイルで個別初期化（F06 未対応。**SDK バージョンアップ時は全ファイル修正が必要**）
+- 🟡 `FUNNEL_PASS` の明示 fail-closed 化（C3）は Streamlit Cloud secrets 設定確認待ちで**保留中**
+
+---
 
 ## プロジェクト概要
 
